@@ -1,0 +1,189 @@
+export type Language = 'es' | 'en';
+
+export interface Translation {
+  nav: {
+    testimonials: string;
+    about: string;
+    calculator: string;
+    faq: string;
+    book: string;
+  };
+  hero: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    cta1: string;
+    cta2: string;
+  };
+  services: {
+    badge: string;
+    title: string;
+    items: {
+      title: string;
+      desc: string;
+    }[];
+  };
+  about: {
+    badge: string;
+    title: string;
+    desc: string;
+    points: string[];
+    cta: string;
+    years: string;
+  };
+  calculator: {
+    title: string;
+    subtitle: string;
+    propertyValue: string;
+    downPayment: string;
+    interestRate: string;
+    monthlyPayment: string;
+    cta: string;
+  };
+  faq: {
+    title: string;
+    items: {
+      q: string;
+      a: string;
+    }[];
+  };
+  footer: {
+    privacy: string;
+    terms: string;
+    contact: string;
+    rights: string;
+  };
+}
+
+export const translations: Record<Language, Translation> = {
+  es: {
+    nav: {
+      testimonials: "Testimonios",
+      about: "Sobre Mí",
+      calculator: "Calculadora",
+      faq: "FAQ",
+      book: "Reservar Tour"
+    },
+    hero: {
+      badge: "+500 Familias Felices",
+      title: "Ayudo a personas a encontrar más que una casa.",
+      subtitle: "Estratega inmobiliario con 6 años de experiencia en el mercado de Houston, TX. Transformando transacciones en legados familiares.",
+      cta1: "Agenda tu Asesoría Gratuita",
+      cta2: "Calcula tu Hipoteca"
+    },
+    services: {
+      badge: "Nuestros Servicios",
+      title: "¿Cómo podemos ayudarte hoy?",
+      items: [
+        { title: "Comprar Primera Casa", desc: "Guía experta paso a paso para que logres el sueño de tu hogar propio sin estrés." },
+        { title: "Vender Propiedad", desc: "Estrategias de marketing digital de alto impacto para vender al mejor precio en tiempo récord." },
+        { title: "Inversión Estratégica", desc: "Portafolios inmobiliarios diseñados para generar flujo de caja y plusvalía a largo plazo." },
+        { title: "Asesor de Confianza", desc: "Transparencia absoluta en cada negociación. Tu éxito es nuestra prioridad #1." },
+        { title: "Cerca del Paso", desc: "¿Ya tienes algo en mente? Te ayudamos a cerrar el trato con las mejores condiciones." },
+        { title: "Guía Local Houston", desc: "Conocimiento profundo de cada vecindario, escuelas y proyecciones de crecimiento." }
+      ]
+    },
+    about: {
+      badge: "¿Quién soy?",
+      title: "Argenis Zabala",
+      desc: "Soy realtor en Houston, Texas, especializado en ayudar a familias a comprar, vender e invertir con claridad y confianza. Entiendo que comprar una casa es una de las decisiones más importantes de tu vida, por eso mi misión es guiarte paso a paso y darte las herramientas para tomar decisiones inteligentes.",
+      points: [
+        "Asesoría personalizada para evitar errores costosos.",
+        "Especialista en primeros compradores, inversionistas y reubicación.",
+        "Conocimiento del mercado y contenido educativo a tu disposición."
+      ],
+      cta: "Agenda tu Asesoría",
+      years: "Años de Experiencia"
+    },
+    calculator: {
+      title: "Calculadora Hipotecaria",
+      subtitle: "Visualiza tu futuro financiero hoy mismo.",
+      propertyValue: "Valor de la propiedad",
+      downPayment: "Cuota Inicial (20%)",
+      interestRate: "Tasa de Interés (%)",
+      monthlyPayment: "Pago Mensual Estimado",
+      cta: "Habla con Argenis sobre tu caso"
+    },
+    faq: {
+      title: "Preguntas Frecuentes",
+      items: [
+        { q: "¿Necesito ser residente para comprar en Houston?", a: "No es estrictamente necesario, existen programas para inversionistas extranjeros." },
+        { q: "¿Cuánto dinero necesito para la cuota inicial?", a: "Depende del préstamo, puede variar desde un 3.5% hasta un 20% o más." },
+        { q: "¿Cómo es el proceso para compradores internacionales?", a: "Contamos con un equipo especializado en cierres remotos y asesoría legal para extranjeros." },
+        { q: "¿Es un buen momento para invertir en real estate?", a: "Houston es una de las ciudades con mayor crecimiento y plusvalía en EE.UU." },
+        { q: "¿Qué incluye la asesoría gratuita de 30 minutos?", a: "Análisis de presupuesto, zonas de interés y plan de acción personalizado." }
+      ]
+    },
+    footer: {
+      privacy: "Política de Privacidad",
+      terms: "Términos de Servicio",
+      contact: "Contacto",
+      rights: "© 2024 Azeta Homes. Curado por Argenis Zabala."
+    }
+  },
+  en: {
+    nav: {
+      testimonials: "Testimonials",
+      about: "About",
+      calculator: "Calculator",
+      faq: "FAQ",
+      book: "Book Tour"
+    },
+    hero: {
+      badge: "+500 Happy Families",
+      title: "I help people find more than just a house.",
+      subtitle: "Real estate strategist with 6 years of experience in the Houston, TX market. Transforming transactions into family legacies.",
+      cta1: "Book Your Free Consultation",
+      cta2: "Calculate Your Mortgage"
+    },
+    services: {
+      badge: "Our Services",
+      title: "How can we help you today?",
+      items: [
+        { title: "Buy First Home", desc: "Expert step-by-step guide to achieving your dream of homeownership stress-free." },
+        { title: "Sell Property", desc: "High-impact digital marketing strategies to sell at the best price in record time." },
+        { title: "Strategic Investment", desc: "Real estate portfolios designed to generate cash flow and long-term appreciation." },
+        { title: "Trusted Advisor", desc: "Absolute transparency in every negotiation. Your success is our #1 priority." },
+        { title: "Close to the Deal", desc: "Already have something in mind? We help you close the deal with the best conditions." },
+        { title: "Houston Local Guide", desc: "Deep knowledge of every neighborhood, schools, and growth projections." }
+      ]
+    },
+    about: {
+      badge: "Who am I?",
+      title: "Argenis Zabala",
+      desc: "I am a realtor in Houston, Texas, specializing in helping families buy, sell, and invest with clarity and confidence. I understand that buying a home is one of the most important decisions of your life, which is why my mission is to guide you step-by-step and give you the tools to make smart decisions.",
+      points: [
+        "Personalized advice to help you avoid costly mistakes.",
+        "Specialist in first-time buyers, investors, and relocation.",
+        "Market knowledge and educational content at your disposal."
+      ],
+      cta: "Schedule Your Consultation",
+      years: "Years of Experience"
+    },
+    calculator: {
+      title: "Mortgage Calculator",
+      subtitle: "Visualize your financial future today.",
+      propertyValue: "Property Value",
+      downPayment: "Down Payment (20%)",
+      interestRate: "Interest Rate (%)",
+      monthlyPayment: "Estimated Monthly Payment",
+      cta: "Talk to Argenis about your case"
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      items: [
+        { q: "Do I need to be a resident to buy in Houston?", a: "It is not strictly necessary; there are programs for foreign investors." },
+        { q: "How much money do I need for a down payment?", a: "It depends on the loan, ranging from 3.5% to 20% or more." },
+        { q: "What is the process for international buyers?", a: "We have a specialized team for remote closings and legal advice for foreigners." },
+        { q: "Is it a good time to invest in real estate?", a: "Houston is one of the fastest-growing cities with high appreciation in the US." },
+        { q: "What does the free 30-minute consultation include?", a: "Budget analysis, areas of interest, and a personalized action plan." }
+      ]
+    },
+    footer: {
+      privacy: "Privacy Policy",
+      terms: "Terms of Service",
+      contact: "Contact",
+      rights: "© 2024 Azeta Homes. Curated by Argenis Zabala."
+    }
+  }
+};

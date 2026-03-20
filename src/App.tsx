@@ -1,0 +1,855 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { 
+  Menu, X, Home, Image as ImageIcon, User, Calculator, 
+  HelpCircle, Calendar, Play, ArrowRight, CheckCircle2,
+  TrendingUp, Tag, BadgeCheck, Map as MapIcon, ChevronDown,
+  Instagram, Linkedin, MessageCircle, Sun, Moon
+} from 'lucide-react';
+import { cn } from './lib/utils';
+import { translations, Language } from './constants/translations';
+
+// --- Components ---
+
+const SkylineBackground = () => {
+  const { scrollYProgress } = useScroll();
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      mouseX.set((clientX / innerWidth) - 0.5);
+      mouseY.set((clientY / innerHeight) - 0.5);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  const springMouseX = useSpring(mouseX, { stiffness: 40, damping: 25 });
+  const springMouseY = useSpring(mouseY, { stiffness: 40, damping: 25 });
+
+  // Scroll Parallax - Moving UP as you scroll down
+  const scrollY1 = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const scrollY2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const scrollY3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
+
+  // Mouse Parallax
+  const mouseX1 = useTransform(springMouseX, [-0.5, 0.5], [-20, 20]);
+  const mouseX2 = useTransform(springMouseX, [-0.5, 0.5], [-40, 40]);
+  const mouseX3 = useTransform(springMouseX, [-0.5, 0.5], [-60, 60]);
+
+  const mouseY1 = useTransform(springMouseY, [-0.5, 0.5], [-10, 10]);
+  const mouseY2 = useTransform(springMouseY, [-0.5, 0.5], [-20, 20]);
+  const mouseY3 = useTransform(springMouseY, [-0.5, 0.5], [-30, 30]);
+
+  const springY1 = useSpring(scrollY1, { stiffness: 15, damping: 25 });
+  const springY2 = useSpring(scrollY2, { stiffness: 15, damping: 25 });
+  const springY3 = useSpring(scrollY3, { stiffness: 15, damping: 25 });
+
+  const atmosphereColor = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    ['rgba(231, 195, 83, 0.03)', 'rgba(30, 58, 138, 0.05)', 'rgba(231, 195, 83, 0.03)']
+  );
+
+  // Explicit Building Configurations
+  const buildingsLayer1 = useRef([
+    { h: 75, w: 8, r: '2px', type: 'office' }, { h: 95, w: 12, r: '4px', type: 'residential' }, 
+    { h: 85, w: 10, r: '2px', type: 'tower' }, { h: 105, w: 14, r: '6px', type: 'office' }, 
+    { h: 70, w: 9, r: '2px', type: 'residential' }, { h: 90, w: 11, r: '4px', type: 'tower' },
+    { h: 80, w: 10, r: '2px', type: 'office' }, { h: 100, w: 15, r: '6px', type: 'residential' },
+  ]).current;
+  
+  const buildingsLayer2 = useRef([
+    { h: 55, w: 12, r: '3px', type: 'residential' }, { h: 80, w: 16, r: '6px', type: 'office' }, 
+    { h: 65, w: 14, r: '4px', type: 'tower' }, { h: 90, w: 20, r: '8px', type: 'residential' },
+    { h: 60, w: 13, r: '4px', type: 'office' }, { h: 85, w: 18, r: '6px', type: 'tower' }
+  ]).current;
+
+  const buildingsLayer3 = useRef([
+    { h: 35, w: 18, r: '4px', type: 'office' }, { h: 60, w: 25, r: '8px', type: 'residential' }, 
+    { h: 45, w: 20, r: '6px', type: 'tower' }, { h: 70, w: 28, r: '10px', type: 'office' },
+    { h: 40, w: 22, r: '6px', type: 'residential' }
+  ]).current;
+
+  const Building = ({ b, i, layer }: { b: any, i: number, layer: number }) => {
+    const isOffice = b.type === 'office';
+    const isRes = b.type === 'residential';
+    const isTower = b.type === 'tower';
+    
+    // Vary opacity based on layer for depth
+    const baseOpacity = layer === 1 ? 0.25 : layer === 2 ? 0.4 : 0.6;
+    
+    return (
+      <div 
+        className="relative border-t border-x border-white/10 flex flex-col items-center justify-end overflow-hidden"
+        style={{ 
+          height: `${b.h}%`, 
+          width: `${b.w}%`, 
+          borderRadius: `${b.r} ${b.r} 0 0`,
+          backgroundColor: `rgba(var(--building-rgb), ${baseOpacity * 0.12})`,
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)'
+        }}
+      >
+        {/* Windows Grid */}
+        {isOffice && (
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:12px_12px] mt-4 mx-1" />
+        )}
+        {isRes && (
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.08)_2px,transparent_2px)] bg-[size:100%_16px] mt-2 mx-2" />
+        )}
+        {isTower && (
+          <>
+            <div className="absolute top-0 w-[2px] h-16 bg-white/20 -translate-y-full" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_100%] mx-2" />
+          </>
+        )}
+        
+        {/* Random lit window effect */}
+        {i % 2 === 0 && (
+          <motion.div 
+            animate={{ opacity: [0, baseOpacity * 0.8, 0] }} 
+            transition={{ duration: 4 + (i % 3), repeat: Infinity, delay: i * 0.5, ease: "easeInOut" }}
+            className="absolute inset-0 bg-gradient-to-tr from-tertiary/20 to-transparent"
+          />
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-surface transition-colors duration-500">
+      {/* Cinematic Grain Texture */}
+      <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none z-50 dark:opacity-[0.04] opacity-[0.02]" 
+           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+      />
+
+      {/* Dynamic Atmosphere / Glow */}
+      <motion.div 
+        animate={{ opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        style={{ backgroundColor: atmosphereColor }}
+        className="absolute inset-0 mix-blend-screen"
+      />
+      
+      {/* Subtle Ambient Light */}
+      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-tertiary/5 rounded-full blur-[150px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[90%] h-[90%] bg-tertiary/5 rounded-full blur-[200px]" />
+
+      {/* Layer 1: Far Skyline */}
+      <motion.div 
+        style={{ y: springY1, x: mouseX1, translateY: mouseY1 }}
+        className="absolute bottom-[-20vh] left-[-5%] w-[110%] h-[90vh] flex items-end justify-around px-4 blur-[6px]"
+      >
+        {buildingsLayer1.map((b, i) => <Building key={i} b={b} i={i} layer={1} />)}
+      </motion.div>
+
+      {/* Layer 2: Mid Skyline */}
+      <motion.div 
+        style={{ y: springY2, x: mouseX2, translateY: mouseY2 }}
+        className="absolute bottom-[-25vh] left-[-5%] w-[110%] h-[80vh] flex items-end justify-between px-12 blur-[4px]"
+      >
+        {buildingsLayer2.map((b, i) => <Building key={i} b={b} i={i} layer={2} />)}
+      </motion.div>
+
+      {/* Layer 3: Close Skyline */}
+      <motion.div 
+        style={{ y: springY3, x: mouseX3, translateY: mouseY3 }}
+        className="absolute bottom-[-30vh] left-[-5%] w-[110%] h-[70vh] flex items-end justify-around px-2 blur-[2px]"
+      >
+        {buildingsLayer3.map((b, i) => <Building key={i} b={b} i={i} layer={3} />)}
+      </motion.div>
+
+      {/* Top Gradient for text legibility */}
+      <div className="absolute top-0 left-0 w-full h-[20vh] bg-gradient-to-b from-surface to-transparent transition-colors duration-500" />
+      
+      {/* Bottom Gradient for blending */}
+      <div className="absolute bottom-0 left-0 w-full h-[10vh] bg-gradient-to-t from-surface to-transparent transition-colors duration-500" />
+    </div>
+  );
+};
+
+const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => void }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+  const t = translations[lang].nav;
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
+  return (
+    <nav className={cn(
+      "fixed top-0 w-full z-50 transition-all duration-500 px-6 py-4 md:px-12",
+      isScrolled ? "bg-surface/80 backdrop-blur-xl py-3 shadow-lg" : "bg-transparent"
+    )}>
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <a href="/" className="h-12 md:h-16 flex items-center shrink-0 transition-transform hover:scale-105">
+          <svg viewBox="0 0 280 120" className="h-full w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(140, 40)">
+              <path d="M -35 20 L -5 20 L 25 -30 L -5 -30 Z" />
+              <path d="M 12 -5 L 42 -5 L 57 20 L 27 20 Z" />
+            </g>
+            <text x="140" y="90" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" text-anchor="middle" letter-spacing="-0.5">
+              Azeta Homes.
+            </text>
+            <text x="140" y="112" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="13" text-anchor="middle" letter-spacing="0.5">
+              Real Estate Group
+            </text>
+          </svg>
+        </a>
+        
+        <div className="hidden md:flex gap-8 items-center">
+          {[
+            { name: t.testimonials, href: "#testimonials" },
+            { name: t.about, href: "#about" },
+            { name: t.calculator, href: "#calculator" },
+            { name: t.faq, href: "#faq" },
+          ].map((item) => (
+            <a 
+              key={item.name}
+              href={item.href}
+              className="text-on-surface-variant hover:text-on-surface font-label text-xs uppercase tracking-widest transition-all duration-300"
+            >
+              {item.name}
+            </a>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4 md:gap-6">
+          <button 
+            onClick={() => setIsDark(!isDark)}
+            className="text-on-surface-variant hover:text-on-surface transition-colors"
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+          <button 
+            onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+            className="text-on-surface-variant hover:text-on-surface font-label text-xs uppercase tracking-widest"
+          >
+            {lang === 'es' ? 'EN' : 'ES'}
+          </button>
+          <button className="bg-tertiary text-on-tertiary-fixed font-bold px-5 py-2 rounded-xl hover:scale-95 transition-all duration-200 text-sm">
+            {t.book}
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+const Hero = ({ lang }: { lang: Language }) => {
+  const t = translations[lang].hero;
+  return (
+    <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-32 pb-8">
+      <div className="relative z-10 text-center px-6 max-w-5xl space-y-8 flex-1 flex flex-col justify-center items-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ 
+            opacity: 1, 
+            y: [0, -10, 0],
+          }}
+          transition={{ 
+            opacity: { duration: 0.8 },
+            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          }}
+          className="inline-flex items-center gap-3 bg-surface-container-high/40 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant/20 mb-4"
+        >
+          <div className="flex -space-x-2">
+            {[1, 2, 3].map(i => (
+              <img 
+                key={i}
+                className="w-8 h-8 rounded-full border-2 border-surface"
+                src={`https://i.pravatar.cc/150?u=${i}`}
+                alt="Avatar"
+              />
+            ))}
+          </div>
+          <span className="text-xs font-label uppercase tracking-widest text-tertiary">{t.badge}</span>
+        </motion.div>
+
+        <motion.h1 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="font-headline text-5xl md:text-7xl lg:text-8xl text-on-surface leading-tight tracking-tight"
+        >
+          {lang === 'es' ? (
+            <>Ayudo a personas a encontrar <span className="italic text-tertiary">más que una casa</span>.</>
+          ) : (
+            <>I help people find <span className="italic text-tertiary">more than just a house</span>.</>
+          )}
+        </motion.h1>
+
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="max-w-2xl mx-auto text-on-surface-variant text-lg md:text-xl font-light leading-relaxed"
+        >
+          {t.subtitle}
+        </motion.p>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6"
+        >
+          <button className="bg-tertiary text-on-tertiary-fixed font-bold px-10 py-5 rounded-xl text-lg hover:scale-105 transition-all duration-300 shadow-2xl shadow-tertiary/20">
+            {t.cta1}
+          </button>
+          <button className="border border-tertiary/40 backdrop-blur-sm text-tertiary px-10 py-5 rounded-xl text-lg hover:bg-tertiary hover:text-on-tertiary transition-all duration-300">
+            {t.cta2}
+          </button>
+        </motion.div>
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center gap-2 opacity-50 mt-12">
+        <span className="text-[10px] font-label uppercase tracking-[0.3em] text-on-surface">Scroll</span>
+        <motion.div 
+          animate={{ height: [0, 48, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-[1px] bg-gradient-to-b from-tertiary to-transparent" 
+        />
+      </div>
+    </section>
+  );
+};
+
+const Services = ({ lang }: { lang: Language }) => {
+  const t = translations[lang].services;
+  const icons = [Home, Tag, TrendingUp, BadgeCheck, MapIcon, MapIcon];
+
+  return (
+    <section className="py-24 px-8 max-w-7xl mx-auto relative z-10">
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+        className="text-center mb-16"
+      >
+        <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
+        <h2 className="font-headline text-4xl md:text-5xl mt-4 text-on-surface">{t.title}</h2>
+      </motion.div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {t.items.map((item, idx) => {
+          const Icon = icons[idx] || Home;
+          return (
+            <motion.div 
+              key={idx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              whileHover={{ y: -10 }}
+              className="bg-surface-container-low/80 backdrop-blur-sm p-10 rounded-3xl group hover:bg-surface-container-high transition-all duration-500 border border-outline-variant/5"
+            >
+              <Icon className="w-10 h-10 text-tertiary mb-6 group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl font-bold mb-4 text-on-surface">{item.title}</h3>
+              <p className="text-on-surface-variant leading-relaxed">{item.desc}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
+const SuccessStories = ({ lang }: { lang: Language }) => {
+  const testimonials = [
+    {
+      url: "https://i.imgur.com/bV2bxB9.jpeg",
+      text: lang === 'es' 
+        ? "Argenis no solo nos vendió una casa, nos ayudó a construir un futuro. Su conocimiento del mercado de Houston es inigualable."
+        : "Argenis didn't just sell us a house; he helped us build a future. His knowledge of the Houston market is unmatched.",
+      author: "Familia Mendoza"
+    },
+    {
+      url: "https://i.imgur.com/mwD32P8.png",
+      text: lang === 'es'
+        ? "La mejor decisión que tomamos fue confiar en Azeta Homes. El proceso fue transparente y mucho más rápido de lo que esperábamos."
+        : "The best decision we made was trusting Azeta Homes. The process was transparent and much faster than we expected.",
+      author: "Carlos & Elena"
+    },
+    {
+      url: "https://i.imgur.com/HbfbFpO.png",
+      text: lang === 'es'
+        ? "Como inversionista extranjero, necesitaba a alguien que entendiera mis necesidades. Argenis superó todas mis expectativas."
+        : "As a foreign investor, I needed someone who understood my needs. Argenis exceeded all my expectations.",
+      author: "Roberto G."
+    },
+    {
+      url: "https://i.imgur.com/miqcH97.png",
+      text: lang === 'es'
+        ? "Increíble atención al detalle. Encontraron la casa perfecta para nosotros en River Oaks en tiempo récord."
+        : "Incredible attention to detail. They found the perfect home for us in River Oaks in record time.",
+      author: "Sarah & James"
+    },
+    {
+      url: "https://i.imgur.com/33kH7P6.png",
+      text: lang === 'es'
+        ? "Profesionalismo puro. Si buscas lujo y honestidad en Houston, Argenis es la persona indicada."
+        : "Pure professionalism. If you're looking for luxury and honesty in Houston, Argenis is the right person.",
+      author: "Dra. Valentina R."
+    }
+  ];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  return (
+    <section id="testimonials" className="py-24 bg-transparent relative z-10">
+      <div className="px-8 max-w-7xl mx-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">
+            {lang === 'es' ? 'Testimonios & Galería' : 'Testimonials & Gallery'}
+          </span>
+          <h2 className="font-headline text-4xl md:text-5xl mt-4 text-on-surface">
+            {lang === 'es' ? 'Historias que inspiran' : 'Stories that inspire'}
+          </h2>
+        </motion.div>
+
+        <div className="relative flex items-center justify-center h-[500px] md:h-[600px]">
+          <div className="relative w-full max-w-4xl flex items-center justify-center">
+            <AnimatePresence mode="popLayout">
+              {testimonials.map((item, idx) => {
+                const distance = idx - activeIndex;
+                const isCenter = distance === 0;
+                const isLeft = distance === -1 || (activeIndex === 0 && idx === testimonials.length - 1);
+                const isRight = distance === 1 || (activeIndex === testimonials.length - 1 && idx === 0);
+                
+                // Only show 3 items at a time for focus
+                const isVisible = isCenter || isLeft || isRight;
+
+                if (!isVisible) return null;
+
+                return (
+                  <motion.div
+                    key={item.url}
+                    initial={{ opacity: 0, scale: 0.8, x: distance * 300 }}
+                    animate={{ 
+                      opacity: isCenter ? 1 : 0.4, 
+                      scale: isCenter ? 1 : 0.8,
+                      x: distance * 350,
+                      zIndex: isCenter ? 10 : 5,
+                      filter: isCenter ? 'blur(0px)' : 'blur(4px)'
+                    }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    className="absolute w-[280px] md:w-[380px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl cursor-pointer border border-white/10 group"
+                    onClick={() => setActiveIndex(idx)}
+                  >
+                    <img 
+                      src={item.url} 
+                      alt={`Success Story ${idx}`} 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className={cn(
+                      "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-500 flex flex-col justify-end p-8",
+                      isCenter ? "opacity-100" : "opacity-0"
+                    )}>
+                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <p className="text-white font-serif italic text-lg md:text-xl leading-relaxed mb-4">
+                          "{item.text}"
+                        </p>
+                        <p className="text-tertiary font-label uppercase tracking-widest text-xs">
+                          — {item.author}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+            <button 
+              onClick={() => setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+              className="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/20 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary-fixed transition-all"
+            >
+              <ArrowRight className="rotate-180 w-5 h-5" />
+            </button>
+            <button 
+              onClick={() => setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+              className="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/20 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary-fixed transition-all"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Dots */}
+        <div className="flex justify-center gap-2 mt-12">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-500",
+                activeIndex === i ? "w-8 bg-tertiary" : "w-2 bg-outline-variant/30"
+              )}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const About = ({ lang }: { lang: Language }) => {
+  const t = translations[lang].about;
+  return (
+    <section id="about" className="py-24 px-8 max-w-7xl mx-auto relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="relative"
+        >
+          <div className="absolute -top-10 -left-10 w-64 h-64 bg-tertiary/10 rounded-full blur-3xl" />
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl z-10">
+            <img 
+              className="w-full grayscale hover:grayscale-0 transition-all duration-700 cursor-pointer" 
+              src="https://i.imgur.com/PrWEgtn.jpeg" 
+              alt="Argenis Zabala" 
+            />
+          </div>
+          <div className="absolute -bottom-8 -right-8 bg-surface-container-high p-8 rounded-2xl border border-outline-variant/20 z-20 hidden md:block">
+            <p className="font-headline text-3xl text-tertiary">6+</p>
+            <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant">{t.years}</p>
+          </div>
+        </motion.div>
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="space-y-8"
+        >
+          <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
+          <h2 className="font-headline text-5xl leading-tight text-on-surface">{t.title}</h2>
+          <p className="text-on-surface-variant text-lg leading-relaxed">{t.desc}</p>
+          <div className="space-y-4">
+            {t.points.map((p, i) => (
+              <div key={i} className="flex items-center gap-4">
+                <div className="w-1.5 h-1.5 bg-tertiary rounded-full" />
+                <p className="text-on-surface">{p}</p>
+              </div>
+            ))}
+          </div>
+          <button className="bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 rounded-xl hover:scale-105 transition-all shadow-xl shadow-tertiary/10">
+            {t.cta}
+          </button>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const MortgageCalculator = ({ lang }: { lang: Language }) => {
+  const t = translations[lang].calculator;
+  const [value, setValue] = useState(450000);
+  const [down, setDown] = useState(90000);
+  const [rate, setRate] = useState(6.5);
+
+  const monthly = Math.round(
+    ((value - down) * (rate / 100 / 12)) / 
+    (1 - Math.pow(1 + rate / 100 / 12, -360))
+  );
+
+  return (
+    <section id="calculator" className="py-24 bg-transparent relative z-10">
+      <div className="max-w-4xl mx-auto px-8">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="bg-surface-container-lowest/40 backdrop-blur-md p-12 rounded-[2.5rem] border border-white/10 shadow-2xl"
+        >
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-4xl mb-2 text-on-surface">{t.title}</h2>
+            <p className="text-on-surface-variant">{t.subtitle}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="space-y-8">
+              <div>
+                <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-3">{t.propertyValue}</label>
+                <div className="relative">
+                  <span className="absolute left-0 bottom-2 text-tertiary">$</span>
+                  <input 
+                    type="number"
+                    value={value}
+                    onChange={(e) => setValue(Number(e.target.value))}
+                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-3">{t.downPayment}</label>
+                <div className="relative">
+                  <span className="absolute left-0 bottom-2 text-tertiary">$</span>
+                  <input 
+                    type="number"
+                    value={down}
+                    onChange={(e) => setDown(Number(e.target.value))}
+                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-3">{t.interestRate}</label>
+                <div className="relative">
+                  <input 
+                    type="number"
+                    step="0.1"
+                    value={rate}
+                    onChange={(e) => setRate(Number(e.target.value))}
+                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pb-2 text-xl font-bold" 
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="bg-surface-container-high rounded-3xl p-10 flex flex-col justify-center items-center text-center">
+              <p className="text-xs font-label uppercase tracking-[0.2em] text-on-surface-variant mb-4">{t.monthlyPayment}</p>
+              <p className="text-5xl md:text-6xl font-headline text-tertiary mb-8">${monthly.toLocaleString()}</p>
+              <button className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-4 rounded-xl hover:bg-tertiary/90 transition-colors">
+                {t.cta}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const FAQ = ({ lang }: { lang: Language }) => {
+  const t = translations[lang].faq;
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  return (
+    <section id="faq" className="py-24 px-8 max-w-4xl mx-auto relative z-10">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="text-center mb-16"
+      >
+        <h2 className="font-headline text-4xl md:text-5xl text-on-surface tracking-tight">{t.title}</h2>
+        <div className="w-12 h-0.5 bg-tertiary/30 mx-auto mt-6" />
+      </motion.div>
+      <div className="max-w-3xl mx-auto space-y-4">
+        {t.items.map((item, i) => (
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="bg-surface-container-low/40 backdrop-blur-md rounded-2xl border border-outline-variant/5 overflow-hidden hover:border-tertiary/20 transition-colors"
+          >
+            <button 
+              onClick={() => setOpenIdx(openIdx === i ? null : i)}
+              className="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-surface-container-high/30 transition-colors"
+            >
+              <span className="font-bold text-on-surface/90">{item.q}</span>
+              <motion.div 
+                animate={{ rotate: openIdx === i ? 180 : 0 }}
+                className="text-tertiary/60"
+              >
+                <ChevronDown className="w-5 h-5" />
+              </motion.div>
+            </button>
+            <AnimatePresence>
+              {openIdx === i && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="px-8 pb-6 text-on-surface-variant/80 leading-relaxed"
+                >
+                  {item.a}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const Footer = ({ lang }: { lang: Language }) => {
+  const t = translations[lang].footer;
+  return (
+    <footer className="bg-transparent w-full py-12 px-8 border-t border-white/10 relative z-10">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8 w-full max-w-7xl mx-auto">
+        <div className="flex items-center gap-4">
+          <svg viewBox="0 0 280 120" className="h-10 w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(140, 40)">
+              <path d="M -35 20 L -5 20 L 25 -30 L -5 -30 Z" />
+              <path d="M 12 -5 L 42 -5 L 57 20 L 27 20 Z" />
+            </g>
+            <text x="140" y="90" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" text-anchor="middle" letter-spacing="-0.5">
+              Azeta Homes.
+            </text>
+            <text x="140" y="112" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="13" text-anchor="middle" letter-spacing="0.5">
+              Real Estate Group
+            </text>
+          </svg>
+        </div>
+        <div className="flex flex-wrap justify-center gap-8">
+          <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.privacy}</a>
+          <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.terms}</a>
+          <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.contact}</a>
+          <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Instagram className="w-5 h-5" /></a>
+          <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+              <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/>
+            </svg>
+          </a>
+          <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Linkedin className="w-5 h-5" /></a>
+        </div>
+        <p className="text-on-surface-variant font-body text-sm">
+          {t.rights}
+        </p>
+      </div>
+    </footer>
+  );
+};
+
+// --- Main App ---
+
+export default function App() {
+  const [lang, setLang] = useState<Language>('es');
+
+  return (
+    <div className="min-h-screen relative">
+      <SkylineBackground />
+      <Navbar lang={lang} setLang={setLang} />
+      <Hero lang={lang} />
+      
+      {/* Video Section */}
+      <section className="py-24 px-8 max-w-7xl mx-auto relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="relative aspect-video rounded-3xl overflow-hidden group cursor-pointer shadow-2xl"
+        >
+          <img 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+            src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920" 
+            alt="Video Thumbnail" 
+          />
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity group-hover:opacity-60">
+            <div className="w-24 h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-300 group-hover:scale-110">
+              <Play className="w-10 h-10 text-on-tertiary-fixed fill-current" />
+            </div>
+          </div>
+          <div className="absolute bottom-10 left-10">
+            <p className="text-white font-headline text-3xl drop-shadow-lg">Houston Luxury Living</p>
+            <p className="text-tertiary font-label uppercase text-sm tracking-widest mt-2 drop-shadow-md">Explora el Estilo de Vida Azeta</p>
+          </div>
+        </motion.div>
+      </section>
+
+      <Services lang={lang} />
+      <SuccessStories lang={lang} />
+      <About lang={lang} />
+      <MortgageCalculator lang={lang} />
+      <FAQ lang={lang} />
+
+      {/* Quote Section */}
+      <section className="py-32 bg-transparent relative overflow-hidden z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="max-w-5xl mx-auto px-8 text-center relative z-10"
+        >
+          <h2 className="font-headline text-3xl md:text-5xl italic leading-relaxed text-on-surface">
+            {lang === 'es' ? (
+              `"Comprar una casa no es solo una transacción financiera; es la construcción del santuario donde verás crecer tus sueños y a tu familia."`
+            ) : (
+              `"Buying a home is not just a financial transaction; it is the construction of the sanctuary where you will see your dreams and your family grow."`
+            )}
+          </h2>
+          <div className="mt-12 flex flex-col items-center">
+            <div className="w-12 h-0.5 bg-tertiary mb-6" />
+            <p className="font-label uppercase tracking-[0.4em] text-tertiary text-sm">Argenis Zabala</p>
+            <p className="text-xs text-on-surface-variant mt-2 uppercase tracking-widest">Founder of Azeta Homes</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 px-8 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="max-w-7xl mx-auto bg-surface-container-lowest/40 backdrop-blur-md rounded-[3rem] p-12 md:p-24 relative overflow-hidden text-center border border-white/10 shadow-2xl"
+        >
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px]" />
+          <div className="relative z-10 max-w-3xl mx-auto space-y-10">
+            <h2 className="font-headline text-5xl md:text-6xl text-on-surface">
+              {lang === 'es' ? '¿Estás listo para dar el siguiente paso?' : 'Are you ready to take the next step?'}
+            </h2>
+            <p className="text-on-surface-variant text-xl">
+              {lang === 'es' ? 'Houston te espera. Hagamos que tu visión se convierta en tu dirección.' : 'Houston awaits you. Let\'s turn your vision into your address.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6">
+              <button className="bg-tertiary text-on-tertiary-fixed font-bold px-12 py-5 rounded-2xl text-lg hover:scale-105 transition-all shadow-2xl shadow-tertiary/20">
+                {lang === 'es' ? 'Agenda tu Cita Ahora' : 'Schedule Your Appointment Now'}
+              </button>
+              <button className="bg-surface-container-high border border-outline-variant/20 text-on-surface font-bold px-12 py-5 rounded-2xl text-lg hover:bg-surface-container-highest transition-all backdrop-blur-sm">
+                {lang === 'es' ? 'Ver Propiedades' : 'View Properties'}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      <Footer lang={lang} />
+
+      {/* Floating WhatsApp */}
+      <a 
+        href="#" 
+        className="fixed bottom-8 right-8 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-[100] group"
+      >
+        <MessageCircle className="w-8 h-8 text-white" />
+      </a>
+    </div>
+  );
+}

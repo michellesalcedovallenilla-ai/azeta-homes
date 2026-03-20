@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Noto Serif", serif;
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Manrope", sans-serif;
+  
+  --color-surface: #0b1227;
+  --color-surface-container: #181f33;
+  --color-surface-container-high: #23293e;
+  --color-surface-container-low: #141b2f;
+  --color-surface-container-lowest: #060d21;
+  --color-tertiary: #e7c353;
+  --color-tertiary-container: #c9a83a;
+  --color-on-tertiary-fixed: #231b00;
+  --color-on-surface: #dbe1fe;
+  --color-on-surface-variant: #c4c6d4;
+  --color-outline-variant: #434652;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-body selection:bg-tertiary selection:text-on-tertiary-fixed;
+  }
+}
+
+.glass-nav {
+  background: rgba(11, 18, 39, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+:root {
+  --building-rgb: 255, 255, 255;
+}
+
+:root:not(.dark) {
+  --color-surface: #f8fafc;
+  --color-on-surface: #0f172a;
+  --color-surface-container: #ffffff;
+  --color-surface-container-high: #f1f5f9;
+  --color-surface-container-low: #f8fafc;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface-variant: #64748b;
+  --color-outline-variant: #e2e8f0;
+  --building-rgb: 15, 23, 42;
+}
+
+:root:not(.dark) .glass-nav {
+  background: rgba(248, 250, 252, 0.4);
+}
+
+.text-glow {
+  text-shadow: 0 0 30px rgba(177, 197, 255, 0.3);
+}
+
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
