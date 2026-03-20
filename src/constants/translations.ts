@@ -62,7 +62,7 @@ export const translations: Record<Language, Translation> = {
       about: "Sobre Mí",
       calculator: "Calculadora",
       faq: "FAQ",
-      book: "Reservar Tour"
+      book: "Agenda tu Asesoría"
     },
     hero: {
       badge: "+500 Familias Felices",
@@ -102,23 +102,23 @@ export const translations: Record<Language, Translation> = {
       downPayment: "Cuota Inicial (20%)",
       interestRate: "Tasa de Interés (%)",
       monthlyPayment: "Pago Mensual Estimado",
-      cta: "Habla con Argenis sobre tu caso"
+      cta: "Habla con Argenis"
     },
     faq: {
       title: "Preguntas Frecuentes",
       items: [
-        { q: "¿Necesito ser residente para comprar en Houston?", a: "No es estrictamente necesario, existen programas para inversionistas extranjeros." },
-        { q: "¿Cuánto dinero necesito para la cuota inicial?", a: "Depende del préstamo, puede variar desde un 3.5% hasta un 20% o más." },
-        { q: "¿Cómo es el proceso para compradores internacionales?", a: "Contamos con un equipo especializado en cierres remotos y asesoría legal para extranjeros." },
-        { q: "¿Es un buen momento para invertir en real estate?", a: "Houston es una de las ciudades con mayor crecimiento y plusvalía en EE.UU." },
-        { q: "¿Qué incluye la asesoría gratuita de 30 minutos?", a: "Análisis de presupuesto, zonas de interés y plan de acción personalizado." }
+        { q: "¿La asesoría tiene algún costo?", a: "No, la asesoría es completamente gratuita. La idea es que puedas conversar con tranquilidad, resolver tus dudas y entender mejor tus opciones antes de tomar cualquier decisión. Sin compromiso." },
+        { q: "¿Cuánto dura la asesoría?", a: "Generalmente entre 20 y 30 minutos. Es tiempo suficiente para entender tu situación, responder tus preguntas y orientarte sobre los próximos pasos para comprar o vender tu propiedad." },
+        { q: "¿También puedo vender mi casa contigo?", a: "Claro que sí. Si estás pensando en vender tu propiedad, puedo ayudarte a definir una estrategia para posicionarla en el mercado y lograr el mejor precio posible, acompañándote durante todo el proceso." },
+        { q: "¿Trabajas solo en Houston?", a: "Mi enfoque principal es Houston y sus alrededores, donde conozco bien el mercado, las oportunidades y las zonas que pueden ser más convenientes según cada cliente." },
+        { q: "¿Debo estar listo para comprar ahora?", a: "No necesariamente. Muchas personas que hablan conmigo aún están evaluando sus opciones o quieren entender mejor el proceso antes de dar el paso. La asesoría también está pensada para eso: darte claridad y ayudarte a tomar decisiones con confianza." }
       ]
     },
     footer: {
       privacy: "Política de Privacidad",
       terms: "Términos de Servicio",
       contact: "Contacto",
-      rights: "© 2024 Azeta Homes. Curado por Argenis Zabala."
+      rights: "© 2026 Azeta Homes. Curado por Argenis Zabala."
     }
   },
   en: {
@@ -127,7 +127,7 @@ export const translations: Record<Language, Translation> = {
       about: "About",
       calculator: "Calculator",
       faq: "FAQ",
-      book: "Book Tour"
+      book: "Schedule Consultation"
     },
     hero: {
       badge: "+500 Happy Families",
@@ -167,23 +167,23 @@ export const translations: Record<Language, Translation> = {
       downPayment: "Down Payment (20%)",
       interestRate: "Interest Rate (%)",
       monthlyPayment: "Estimated Monthly Payment",
-      cta: "Talk to Argenis about your case"
+      cta: "Talk to Argenis"
     },
     faq: {
       title: "Frequently Asked Questions",
       items: [
-        { q: "Do I need to be a resident to buy in Houston?", a: "It is not strictly necessary; there are programs for foreign investors." },
-        { q: "How much money do I need for a down payment?", a: "It depends on the loan, ranging from 3.5% to 20% or more." },
-        { q: "What is the process for international buyers?", a: "We have a specialized team for remote closings and legal advice for foreigners." },
-        { q: "Is it a good time to invest in real estate?", a: "Houston is one of the fastest-growing cities with high appreciation in the US." },
-        { q: "What does the free 30-minute consultation include?", a: "Budget analysis, areas of interest, and a personalized action plan." }
+        { q: "Does the consultation have any cost?", a: "No, the consultation is completely free. The idea is for you to converse with peace of mind, resolve your doubts, and better understand your options before making any decision. No strings attached." },
+        { q: "How long does the consultation last?", a: "Generally between 20 and 30 minutes. It's enough time to understand your situation, answer your questions, and guide you on the next steps to buy or sell your property." },
+        { q: "Can I also sell my house with you?", a: "Of course. If you are thinking of selling your property, I can help you define a strategy to position it in the market and achieve the best possible price, accompanying you throughout the process." },
+        { q: "Do you only work in Houston?", a: "My main focus is Houston and its surroundings, where I know the market well, the opportunities, and the areas that may be most convenient for each client." },
+        { q: "Do I need to be ready to buy now?", a: "Not necessarily. Many people who talk to me are still evaluating their options or want to better understand the process before taking the step. The consultation is also designed for that: to give you clarity and help you make decisions with confidence." }
       ]
     },
     footer: {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       contact: "Contact",
-      rights: "© 2024 Azeta Homes. Curated by Argenis Zabala."
+      rights: "© 2026 Azeta Homes. Curated by Argenis Zabala."
     }
   }
 };

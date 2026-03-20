@@ -4,10 +4,23 @@ import {
   Menu, X, Home, Image as ImageIcon, User, Calculator, 
   HelpCircle, Calendar, Play, ArrowRight, CheckCircle2,
   TrendingUp, Tag, BadgeCheck, Map as MapIcon, ChevronDown,
-  Instagram, Linkedin, MessageCircle, Sun, Moon
+  Instagram, Linkedin, MessageCircle, Sun, Moon, Compass
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { translations, Language } from './constants/translations';
+import { PopupModal } from 'react-calendly';
+
+// --- Hooks ---
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+};
 
 // --- Components ---
 
@@ -15,6 +28,7 @@ const SkylineBackground = () => {
   const { scrollYProgress } = useScroll();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -27,26 +41,26 @@ const SkylineBackground = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const springMouseX = useSpring(mouseX, { stiffness: 40, damping: 25 });
-  const springMouseY = useSpring(mouseY, { stiffness: 40, damping: 25 });
+  const springMouseX = useSpring(mouseX, { stiffness: 15, damping: 40 });
+  const springMouseY = useSpring(mouseY, { stiffness: 15, damping: 40 });
 
   // Scroll Parallax - Moving UP as you scroll down
-  const scrollY1 = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const scrollY2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const scrollY3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const scrollY1 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, -15]);
+  const scrollY2 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, -30]);
+  const scrollY3 = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, -45]);
 
   // Mouse Parallax
-  const mouseX1 = useTransform(springMouseX, [-0.5, 0.5], [-20, 20]);
-  const mouseX2 = useTransform(springMouseX, [-0.5, 0.5], [-40, 40]);
-  const mouseX3 = useTransform(springMouseX, [-0.5, 0.5], [-60, 60]);
+  const mouseX1 = useTransform(springMouseX, [-0.5, 0.5], isMobile ? [0, 0] : [-5, 5]);
+  const mouseX2 = useTransform(springMouseX, [-0.5, 0.5], isMobile ? [0, 0] : [-10, 10]);
+  const mouseX3 = useTransform(springMouseX, [-0.5, 0.5], isMobile ? [0, 0] : [-15, 15]);
 
-  const mouseY1 = useTransform(springMouseY, [-0.5, 0.5], [-10, 10]);
-  const mouseY2 = useTransform(springMouseY, [-0.5, 0.5], [-20, 20]);
-  const mouseY3 = useTransform(springMouseY, [-0.5, 0.5], [-30, 30]);
+  const mouseY1 = useTransform(springMouseY, [-0.5, 0.5], isMobile ? [0, 0] : [-2, 2]);
+  const mouseY2 = useTransform(springMouseY, [-0.5, 0.5], isMobile ? [0, 0] : [-5, 5]);
+  const mouseY3 = useTransform(springMouseY, [-0.5, 0.5], isMobile ? [0, 0] : [-8, 8]);
 
-  const springY1 = useSpring(scrollY1, { stiffness: 15, damping: 25 });
-  const springY2 = useSpring(scrollY2, { stiffness: 15, damping: 25 });
-  const springY3 = useSpring(scrollY3, { stiffness: 15, damping: 25 });
+  const springY1 = useSpring(scrollY1, { stiffness: 10, damping: 40 });
+  const springY2 = useSpring(scrollY2, { stiffness: 10, damping: 40 });
+  const springY3 = useSpring(scrollY3, { stiffness: 10, damping: 40 });
 
   const atmosphereColor = useTransform(
     scrollYProgress,
@@ -74,7 +88,7 @@ const SkylineBackground = () => {
     { h: 40, w: 22, r: '6px', type: 'residential' }
   ]).current;
 
-  const Building = ({ b, i, layer }: { b: any, i: number, layer: number }) => {
+  const Building: React.FC<{ b: any, i: number, layer: number }> = ({ b, i, layer }) => {
     const isOffice = b.type === 'office';
     const isRes = b.type === 'residential';
     const isTower = b.type === 'tower';
@@ -130,7 +144,7 @@ const SkylineBackground = () => {
       {/* Dynamic Atmosphere / Glow */}
       <motion.div 
         animate={{ opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 40, repeat: Infinity, ease: "easeInOut" }}
         style={{ backgroundColor: atmosphereColor }}
         className="absolute inset-0 mix-blend-screen"
       />
@@ -172,7 +186,7 @@ const SkylineBackground = () => {
   );
 };
 
-const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => void }) => {
+const Navbar = ({ lang, setLang, onOpenCalendly }: { lang: Language, setLang: (l: Language) => void, onOpenCalendly: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const t = translations[lang].nav;
@@ -193,20 +207,20 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
 
   return (
     <nav className={cn(
-      "fixed top-0 w-full z-50 transition-all duration-500 px-6 py-4 md:px-12",
+      "fixed top-0 w-full z-50 transition-all duration-500 px-4 py-4 md:px-12",
       isScrolled ? "bg-surface/80 backdrop-blur-xl py-3 shadow-lg" : "bg-transparent"
     )}>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <a href="/" className="h-12 md:h-16 flex items-center shrink-0 transition-transform hover:scale-105">
-          <svg viewBox="0 0 280 120" className="h-full w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(140, 40)">
+        <a href="/" className="h-10 md:h-12 lg:h-14 flex items-center shrink-0 transition-transform hover:scale-105">
+          <svg viewBox="0 0 550 120" className="h-full w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(60, 60) scale(1.2)">
               <path d="M -35 20 L -5 20 L 25 -30 L -5 -30 Z" />
               <path d="M 12 -5 L 42 -5 L 57 20 L 27 20 Z" />
             </g>
-            <text x="140" y="90" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" text-anchor="middle" letter-spacing="-0.5">
-              Azeta Homes.
+            <text x="140" y="70" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="800" fontSize="52" textAnchor="start" letterSpacing="-1">
+              Λzeta Homes.
             </text>
-            <text x="140" y="112" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="13" text-anchor="middle" letter-spacing="0.5">
+            <text x="145" y="100" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="400" fontSize="22" textAnchor="start" letterSpacing="0.5">
               Real Estate Group
             </text>
           </svg>
@@ -242,7 +256,10 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
           >
             {lang === 'es' ? 'EN' : 'ES'}
           </button>
-          <button className="bg-tertiary text-on-tertiary-fixed font-bold px-5 py-2 rounded-xl hover:scale-95 transition-all duration-200 text-sm">
+          <button 
+            onClick={onOpenCalendly}
+            className="bg-tertiary text-on-tertiary-fixed font-bold px-3 py-2 md:px-5 md:py-2 rounded-xl hover:scale-95 transition-all duration-200 text-xs md:text-sm whitespace-nowrap"
+          >
             {t.book}
           </button>
         </div>
@@ -251,20 +268,21 @@ const Navbar = ({ lang, setLang }: { lang: Language, setLang: (l: Language) => v
   );
 };
 
-const Hero = ({ lang }: { lang: Language }) => {
+const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => void }) => {
   const t = translations[lang].hero;
+  const isMobile = useIsMobile();
   return (
-    <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-32 pb-8">
-      <div className="relative z-10 text-center px-6 max-w-5xl space-y-8 flex-1 flex flex-col justify-center items-center">
+    <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-24 md:pt-32 pb-8">
+      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl space-y-8 flex-1 flex flex-col justify-center items-center">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ 
             opacity: 1, 
-            y: [0, -10, 0],
+            y: isMobile ? 0 : [0, -3, 0],
           }}
           transition={{ 
-            opacity: { duration: 0.8 },
-            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            opacity: { duration: 1.5, ease: "easeOut" },
+            y: isMobile ? { duration: 1.5, ease: "easeOut" } : { duration: 8, repeat: Infinity, ease: "easeInOut" }
           }}
           className="inline-flex items-center gap-3 bg-surface-container-high/40 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant/20 mb-4"
         >
@@ -282,10 +300,10 @@ const Hero = ({ lang }: { lang: Language }) => {
         </motion.div>
 
         <motion.h1 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-headline text-5xl md:text-7xl lg:text-8xl text-on-surface leading-tight tracking-tight"
+          transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
+          className="font-headline text-4xl md:text-6xl lg:text-8xl text-on-surface leading-tight tracking-tight"
         >
           {lang === 'es' ? (
             <>Ayudo a personas a encontrar <span className="italic text-tertiary">más que una casa</span>.</>
@@ -297,24 +315,27 @@ const Hero = ({ lang }: { lang: Language }) => {
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
+          transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
           className="max-w-2xl mx-auto text-on-surface-variant text-lg md:text-xl font-light leading-relaxed"
         >
           {t.subtitle}
         </motion.p>
 
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6"
+          transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6 w-full sm:w-auto px-4 sm:px-0"
         >
-          <button className="bg-tertiary text-on-tertiary-fixed font-bold px-10 py-5 rounded-xl text-lg hover:scale-105 transition-all duration-300 shadow-2xl shadow-tertiary/20">
+          <button 
+            onClick={onOpenCalendly}
+            className="w-full sm:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 md:px-10 md:py-5 rounded-xl text-base md:text-lg hover:scale-[1.02] transition-all duration-300 shadow-2xl shadow-tertiary/20"
+          >
             {t.cta1}
           </button>
-          <button className="border border-tertiary/40 backdrop-blur-sm text-tertiary px-10 py-5 rounded-xl text-lg hover:bg-tertiary hover:text-on-tertiary transition-all duration-300">
+          <a href="#calculator" className="w-full sm:w-auto border border-tertiary/40 backdrop-blur-sm text-tertiary px-8 py-4 md:px-10 md:py-5 rounded-xl text-base md:text-lg hover:bg-tertiary hover:text-on-tertiary hover:scale-[1.02] transition-all duration-300 inline-block text-center">
             {t.cta2}
-          </button>
+          </a>
         </motion.div>
       </div>
 
@@ -332,34 +353,34 @@ const Hero = ({ lang }: { lang: Language }) => {
 
 const Services = ({ lang }: { lang: Language }) => {
   const t = translations[lang].services;
-  const icons = [Home, Tag, TrendingUp, BadgeCheck, MapIcon, MapIcon];
+  const icons = [Home, Tag, TrendingUp, BadgeCheck, MapIcon, Compass];
 
   return (
-    <section className="py-24 px-8 max-w-7xl mx-auto relative z-10">
+    <section className="py-16 md:py-24 px-4 md:px-8 max-w-7xl mx-auto relative z-10">
       <motion.div 
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
         className="text-center mb-16"
       >
         <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
         <h2 className="font-headline text-4xl md:text-5xl mt-4 text-on-surface">{t.title}</h2>
       </motion.div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {t.items.map((item, idx) => {
           const Icon = icons[idx] || Home;
           return (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="bg-surface-container-low/80 backdrop-blur-sm p-10 rounded-3xl group hover:bg-surface-container-high transition-all duration-500 border border-outline-variant/5"
+              transition={{ duration: 1.2, delay: idx * 0.15, ease: "easeOut" }}
+              whileHover={{ y: -3 }}
+              className="bg-surface-container-low/80 backdrop-blur-sm p-10 rounded-3xl group hover:bg-surface-container-high transition-all duration-700 border border-outline-variant/5"
             >
-              <Icon className="w-10 h-10 text-tertiary mb-6 group-hover:scale-110 transition-transform" />
+              <Icon className="w-10 h-10 text-tertiary mb-6 group-hover:scale-105 transition-transform duration-500" />
               <h3 className="text-xl font-bold mb-4 text-on-surface">{item.title}</h3>
               <p className="text-on-surface-variant leading-relaxed">{item.desc}</p>
             </motion.div>
@@ -411,13 +432,13 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section id="testimonials" className="py-24 bg-transparent relative z-10">
-      <div className="px-8 max-w-7xl mx-auto">
+    <section id="testimonials" className="py-16 md:py-24 bg-transparent relative z-10">
+      <div className="px-4 md:px-8 max-w-7xl mx-auto">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           className="text-center mb-16"
         >
           <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">
@@ -428,7 +449,7 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
           </h2>
         </motion.div>
 
-        <div className="relative flex items-center justify-center h-[500px] md:h-[600px]">
+        <div className="relative flex items-center justify-center h-[450px] md:h-[600px]">
           <div className="relative w-full max-w-4xl flex items-center justify-center">
             <AnimatePresence mode="popLayout">
               {testimonials.map((item, idx) => {
@@ -445,34 +466,34 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
                 return (
                   <motion.div
                     key={item.url}
-                    initial={{ opacity: 0, scale: 0.8, x: distance * 300 }}
+                    initial={{ opacity: 0, scale: 0.9, x: distance * (typeof window !== 'undefined' && window.innerWidth < 768 ? 100 : 200) }}
                     animate={{ 
                       opacity: isCenter ? 1 : 0.4, 
-                      scale: isCenter ? 1 : 0.8,
-                      x: distance * 350,
+                      scale: isCenter ? 1 : 0.85,
+                      x: distance * (typeof window !== 'undefined' && window.innerWidth < 768 ? 120 : 250),
                       zIndex: isCenter ? 10 : 5,
                       filter: isCenter ? 'blur(0px)' : 'blur(4px)'
                     }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ type: 'spring', stiffness: 40, damping: 30, mass: 1 }}
                     className="absolute w-[280px] md:w-[380px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl cursor-pointer border border-white/10 group"
                     onClick={() => setActiveIndex(idx)}
                   >
                     <img 
                       src={item.url} 
                       alt={`Success Story ${idx}`} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
                     <div className={cn(
-                      "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-500 flex flex-col justify-end p-8",
+                      "absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent transition-opacity duration-500 flex flex-col justify-end p-4 md:p-8",
                       isCenter ? "opacity-100" : "opacity-0"
                     )}>
                       <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <p className="text-white font-serif italic text-lg md:text-xl leading-relaxed mb-4">
+                        <p className="text-white font-serif italic text-sm md:text-lg leading-relaxed mb-2 md:mb-4">
                           "{item.text}"
                         </p>
-                        <p className="text-tertiary font-label uppercase tracking-widest text-xs">
+                        <p className="text-tertiary font-label uppercase tracking-widest text-[10px] md:text-xs">
                           — {item.author}
                         </p>
                       </div>
@@ -482,9 +503,11 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
               })}
             </AnimatePresence>
           </div>
+        </div>
 
-          {/* Navigation Controls */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+        {/* Navigation Controls & Dots */}
+        <div className="flex flex-col items-center gap-8 mt-8">
+          <div className="flex gap-4">
             <button 
               onClick={() => setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
               className="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/20 flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary-fixed transition-all"
@@ -498,36 +521,36 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
-        </div>
 
-        {/* Dots */}
-        <div className="flex justify-center gap-2 mt-12">
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveIndex(i)}
-              className={cn(
-                "h-1.5 rounded-full transition-all duration-500",
-                activeIndex === i ? "w-8 bg-tertiary" : "w-2 bg-outline-variant/30"
-              )}
-            />
-          ))}
+          {/* Dots */}
+          <div className="flex justify-center gap-2">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-500",
+                  activeIndex === i ? "w-8 bg-tertiary" : "w-2 bg-outline-variant/30"
+                )}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-const About = ({ lang }: { lang: Language }) => {
+const About = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => void }) => {
   const t = translations[lang].about;
   return (
-    <section id="about" className="py-24 px-8 max-w-7xl mx-auto relative z-10">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+    <section id="about" className="py-16 md:py-24 px-4 md:px-8 max-w-7xl mx-auto relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <motion.div 
-          initial={{ opacity: 0, x: -50 }}
+          initial={{ opacity: 0, x: -15 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           className="relative"
         >
           <div className="absolute -top-10 -left-10 w-64 h-64 bg-tertiary/10 rounded-full blur-3xl" />
@@ -544,10 +567,10 @@ const About = ({ lang }: { lang: Language }) => {
           </div>
         </motion.div>
         <motion.div 
-          initial={{ opacity: 0, x: 50 }}
+          initial={{ opacity: 0, x: 15 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           className="space-y-8"
         >
           <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
@@ -561,7 +584,10 @@ const About = ({ lang }: { lang: Language }) => {
               </div>
             ))}
           </div>
-          <button className="bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 rounded-xl hover:scale-105 transition-all shadow-xl shadow-tertiary/10">
+          <button 
+            onClick={onOpenCalendly}
+            className="w-full md:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-6 py-4 md:px-8 md:py-4 rounded-xl hover:scale-[1.02] transition-all duration-300 shadow-xl shadow-tertiary/10"
+          >
             {t.cta}
           </button>
         </motion.div>
@@ -570,7 +596,7 @@ const About = ({ lang }: { lang: Language }) => {
   );
 };
 
-const MortgageCalculator = ({ lang }: { lang: Language }) => {
+const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => void }) => {
   const t = translations[lang].calculator;
   const [value, setValue] = useState(450000);
   const [down, setDown] = useState(90000);
@@ -582,20 +608,20 @@ const MortgageCalculator = ({ lang }: { lang: Language }) => {
   );
 
   return (
-    <section id="calculator" className="py-24 bg-transparent relative z-10">
-      <div className="max-w-4xl mx-auto px-8">
+    <section id="calculator" className="py-16 md:py-24 bg-transparent relative z-10">
+      <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="bg-surface-container-lowest/40 backdrop-blur-md p-12 rounded-[2.5rem] border border-white/10 shadow-2xl"
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="bg-surface-container-lowest/40 backdrop-blur-md p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] border border-white/10 shadow-2xl"
         >
           <div className="text-center mb-12">
             <h2 className="font-headline text-4xl mb-2 text-on-surface">{t.title}</h2>
             <p className="text-on-surface-variant">{t.subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             <div className="space-y-8">
               <div>
                 <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-3">{t.propertyValue}</label>
@@ -634,10 +660,13 @@ const MortgageCalculator = ({ lang }: { lang: Language }) => {
                 </div>
               </div>
             </div>
-            <div className="bg-surface-container-high rounded-3xl p-10 flex flex-col justify-center items-center text-center">
+            <div className="bg-surface-container-high rounded-3xl p-6 md:p-10 flex flex-col justify-center items-center text-center">
               <p className="text-xs font-label uppercase tracking-[0.2em] text-on-surface-variant mb-4">{t.monthlyPayment}</p>
-              <p className="text-5xl md:text-6xl font-headline text-tertiary mb-8">${monthly.toLocaleString()}</p>
-              <button className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-4 rounded-xl hover:bg-tertiary/90 transition-colors">
+              <p className="text-4xl md:text-6xl font-headline text-tertiary mb-8">${monthly.toLocaleString()}</p>
+              <button 
+                onClick={onOpenCalendly}
+                className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-3 md:py-4 rounded-xl hover:bg-tertiary/90 transition-colors text-sm md:text-base"
+              >
                 {t.cta}
               </button>
             </div>
@@ -653,9 +682,9 @@ const FAQ = ({ lang }: { lang: Language }) => {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="py-24 px-8 max-w-4xl mx-auto relative z-10">
+    <section id="faq" className="py-16 md:py-24 px-4 md:px-8 max-w-4xl mx-auto relative z-10">
       <motion.div 
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
@@ -708,35 +737,39 @@ const FAQ = ({ lang }: { lang: Language }) => {
 const Footer = ({ lang }: { lang: Language }) => {
   const t = translations[lang].footer;
   return (
-    <footer className="bg-transparent w-full py-12 px-8 border-t border-white/10 relative z-10">
+    <footer className="bg-transparent w-full py-12 px-4 md:px-8 border-t border-white/10 relative z-10">
       <div className="flex flex-col md:flex-row justify-between items-center gap-8 w-full max-w-7xl mx-auto">
         <div className="flex items-center gap-4">
-          <svg viewBox="0 0 280 120" className="h-10 w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(140, 40)">
+          <svg viewBox="0 0 550 120" className="h-8 md:h-10 w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(60, 60) scale(1.2)">
               <path d="M -35 20 L -5 20 L 25 -30 L -5 -30 Z" />
               <path d="M 12 -5 L 42 -5 L 57 20 L 27 20 Z" />
             </g>
-            <text x="140" y="90" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" text-anchor="middle" letter-spacing="-0.5">
-              Azeta Homes.
+            <text x="140" y="70" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="800" fontSize="52" textAnchor="start" letterSpacing="-1">
+              Λzeta Homes.
             </text>
-            <text x="140" y="112" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="13" text-anchor="middle" letter-spacing="0.5">
+            <text x="145" y="100" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="400" fontSize="22" textAnchor="start" letterSpacing="0.5">
               Real Estate Group
             </text>
           </svg>
         </div>
-        <div className="flex flex-wrap justify-center gap-8">
-          <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.privacy}</a>
-          <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.terms}</a>
-          <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.contact}</a>
-          <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Instagram className="w-5 h-5" /></a>
-          <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-              <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/>
-            </svg>
-          </a>
-          <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Linkedin className="w-5 h-5" /></a>
+        <div className="flex flex-col items-center gap-6">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8 items-center">
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.privacy}</a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.terms}</a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.contact}</a>
+          </div>
+          <div className="flex items-center gap-6">
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Instagram className="w-5 h-5" /></a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/>
+              </svg>
+            </a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Linkedin className="w-5 h-5" /></a>
+          </div>
         </div>
-        <p className="text-on-surface-variant font-body text-sm">
+        <p className="text-on-surface-variant font-body text-sm text-center md:text-right max-w-xs md:pr-20">
           {t.rights}
         </p>
       </div>
@@ -748,15 +781,16 @@ const Footer = ({ lang }: { lang: Language }) => {
 
 export default function App() {
   const [lang, setLang] = useState<Language>('es');
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
 
   return (
     <div className="min-h-screen relative">
       <SkylineBackground />
-      <Navbar lang={lang} setLang={setLang} />
-      <Hero lang={lang} />
+      <Navbar lang={lang} setLang={setLang} onOpenCalendly={() => setIsCalendlyOpen(true)} />
+      <Hero lang={lang} onOpenCalendly={() => setIsCalendlyOpen(true)} />
       
       {/* Video Section */}
-      <section className="py-24 px-8 max-w-7xl mx-auto relative z-10">
+      <section className="py-16 md:py-24 px-4 md:px-8 max-w-7xl mx-auto relative z-10">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -774,23 +808,19 @@ export default function App() {
               <Play className="w-10 h-10 text-on-tertiary-fixed fill-current" />
             </div>
           </div>
-          <div className="absolute bottom-10 left-10">
-            <p className="text-white font-headline text-3xl drop-shadow-lg">Houston Luxury Living</p>
-            <p className="text-tertiary font-label uppercase text-sm tracking-widest mt-2 drop-shadow-md">Explora el Estilo de Vida Azeta</p>
-          </div>
         </motion.div>
       </section>
 
       <Services lang={lang} />
       <SuccessStories lang={lang} />
-      <About lang={lang} />
-      <MortgageCalculator lang={lang} />
+      <About lang={lang} onOpenCalendly={() => setIsCalendlyOpen(true)} />
+      <MortgageCalculator lang={lang} onOpenCalendly={() => setIsCalendlyOpen(true)} />
       <FAQ lang={lang} />
 
       {/* Quote Section */}
-      <section className="py-32 bg-transparent relative overflow-hidden z-10">
+      <section className="py-20 md:py-32 bg-transparent relative overflow-hidden z-10">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
@@ -812,28 +842,31 @@ export default function App() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 px-8 relative z-10">
+      <section className="py-16 md:py-24 px-4 md:px-8 relative z-10">
         <motion.div 
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="max-w-7xl mx-auto bg-surface-container-lowest/40 backdrop-blur-md rounded-[3rem] p-12 md:p-24 relative overflow-hidden text-center border border-white/10 shadow-2xl"
+          className="max-w-7xl mx-auto bg-surface-container-lowest/40 backdrop-blur-md rounded-[2rem] md:rounded-[3rem] p-8 md:p-24 relative overflow-hidden text-center border border-white/10 shadow-2xl"
         >
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px]" />
-          <div className="relative z-10 max-w-3xl mx-auto space-y-10">
-            <h2 className="font-headline text-5xl md:text-6xl text-on-surface">
+          <div className="relative z-10 max-w-3xl mx-auto space-y-8 md:space-y-10">
+            <h2 className="font-headline text-4xl md:text-6xl text-on-surface">
               {lang === 'es' ? '¿Estás listo para dar el siguiente paso?' : 'Are you ready to take the next step?'}
             </h2>
-            <p className="text-on-surface-variant text-xl">
+            <p className="text-on-surface-variant text-lg md:text-xl">
               {lang === 'es' ? 'Houston te espera. Hagamos que tu visión se convierta en tu dirección.' : 'Houston awaits you. Let\'s turn your vision into your address.'}
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6">
-              <button className="bg-tertiary text-on-tertiary-fixed font-bold px-12 py-5 rounded-2xl text-lg hover:scale-105 transition-all shadow-2xl shadow-tertiary/20">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center pt-4 md:pt-6">
+              <button 
+                onClick={() => setIsCalendlyOpen(true)}
+                className="w-full sm:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:scale-105 transition-all shadow-2xl shadow-tertiary/20"
+              >
                 {lang === 'es' ? 'Agenda tu Cita Ahora' : 'Schedule Your Appointment Now'}
               </button>
-              <button className="bg-surface-container-high border border-outline-variant/20 text-on-surface font-bold px-12 py-5 rounded-2xl text-lg hover:bg-surface-container-highest transition-all backdrop-blur-sm">
+              <button className="w-full sm:w-auto bg-surface-container-high border border-outline-variant/20 text-on-surface font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:bg-surface-container-highest transition-all backdrop-blur-sm">
                 {lang === 'es' ? 'Ver Propiedades' : 'View Properties'}
               </button>
             </div>
@@ -850,6 +883,16 @@ export default function App() {
       >
         <MessageCircle className="w-8 h-8 text-white" />
       </a>
+
+      {/* Calendly Modal */}
+      {typeof window !== 'undefined' && (
+        <PopupModal
+          url="https://calendly.com/argeniszabala"
+          onModalClose={() => setIsCalendlyOpen(false)}
+          open={isCalendlyOpen}
+          rootElement={document.getElementById('root') as HTMLElement}
+        />
+      )}
     </div>
   );
 }
