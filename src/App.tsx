@@ -278,11 +278,11 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
             opacity: 1, 
-            y: isMobile ? 0 : [0, -3, 0],
+            y: isMobile ? 0 : [0, -2, 0],
           }}
           transition={{ 
             opacity: { duration: 1.5, ease: "easeOut" },
-            y: isMobile ? { duration: 1.5, ease: "easeOut" } : { duration: 8, repeat: Infinity, ease: "easeInOut" }
+            y: isMobile ? { duration: 1.5, ease: "easeOut" } : { duration: 12, repeat: Infinity, ease: "easeInOut" }
           }}
           className="inline-flex items-center gap-3 bg-surface-container-high/40 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant/20 mb-4"
         >
@@ -329,11 +329,11 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
         >
           <button 
             onClick={onOpenCalendly}
-            className="w-full sm:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 md:px-10 md:py-5 rounded-xl text-base md:text-lg hover:scale-[1.02] transition-all duration-300 shadow-2xl shadow-tertiary/20"
+            className="w-full sm:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 md:px-10 md:py-5 rounded-xl text-base md:text-lg hover:scale-[1.02] transition-all duration-1000 shadow-2xl shadow-tertiary/20"
           >
             {t.cta1}
           </button>
-          <a href="#calculator" className="w-full sm:w-auto border border-tertiary/40 backdrop-blur-sm text-tertiary px-8 py-4 md:px-10 md:py-5 rounded-xl text-base md:text-lg hover:bg-tertiary hover:text-on-tertiary hover:scale-[1.02] transition-all duration-300 inline-block text-center">
+          <a href="#calculator" className="w-full sm:w-auto border border-tertiary/40 backdrop-blur-sm text-tertiary px-8 py-4 md:px-10 md:py-5 rounded-xl text-base md:text-lg hover:bg-tertiary hover:text-on-tertiary hover:scale-[1.02] transition-all duration-1000 inline-block text-center">
             {t.cta2}
           </a>
         </motion.div>
@@ -377,10 +377,9 @@ const Services = ({ lang }: { lang: Language }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1.2, delay: idx * 0.15, ease: "easeOut" }}
-              whileHover={{ y: -3 }}
-              className="bg-surface-container-low/80 backdrop-blur-sm p-10 rounded-3xl group hover:bg-surface-container-high transition-all duration-700 border border-outline-variant/5"
+              className="bg-surface-container-low/80 backdrop-blur-sm p-10 rounded-3xl group hover:bg-surface-container-high hover:-translate-y-1 transition-all duration-1000 border border-outline-variant/5"
             >
-              <Icon className="w-10 h-10 text-tertiary mb-6 group-hover:scale-105 transition-transform duration-500" />
+              <Icon className="w-10 h-10 text-tertiary mb-6 group-hover:scale-105 transition-transform duration-1000" />
               <h3 className="text-xl font-bold mb-4 text-on-surface">{item.title}</h3>
               <p className="text-on-surface-variant leading-relaxed">{item.desc}</p>
             </motion.div>
@@ -586,7 +585,7 @@ const About = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () =>
           </div>
           <button 
             onClick={onOpenCalendly}
-            className="w-full md:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-6 py-4 md:px-8 md:py-4 rounded-xl hover:scale-[1.02] transition-all duration-300 shadow-xl shadow-tertiary/10"
+            className="w-full md:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-6 py-4 md:px-8 md:py-4 rounded-xl hover:scale-[1.02] transition-all duration-1000 shadow-xl shadow-tertiary/10"
           >
             {t.cta}
           </button>
@@ -665,7 +664,7 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
               <p className="text-4xl md:text-6xl font-headline text-tertiary mb-8">${monthly.toLocaleString()}</p>
               <button 
                 onClick={onOpenCalendly}
-                className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-3 md:py-4 rounded-xl hover:bg-tertiary/90 transition-colors text-sm md:text-base"
+                className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-3 md:py-4 rounded-xl hover:bg-tertiary/90 hover:scale-[1.02] transition-all duration-1000 text-sm md:text-base"
               >
                 {t.cta}
               </button>
@@ -862,11 +861,11 @@ export default function App() {
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center pt-4 md:pt-6">
               <button 
                 onClick={() => setIsCalendlyOpen(true)}
-                className="w-full sm:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:scale-105 transition-all shadow-2xl shadow-tertiary/20"
+                className="w-full sm:w-auto bg-tertiary text-on-tertiary-fixed font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:scale-[1.02] transition-all duration-1000 shadow-2xl shadow-tertiary/20"
               >
                 {lang === 'es' ? 'Agenda tu Cita Ahora' : 'Schedule Your Appointment Now'}
               </button>
-              <button className="w-full sm:w-auto bg-surface-container-high border border-outline-variant/20 text-on-surface font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:bg-surface-container-highest transition-all backdrop-blur-sm">
+              <button className="w-full sm:w-auto bg-surface-container-high border border-outline-variant/20 text-on-surface font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:bg-surface-container-highest transition-all duration-1000 backdrop-blur-sm">
                 {lang === 'es' ? 'Ver Propiedades' : 'View Properties'}
               </button>
             </div>
@@ -879,9 +878,9 @@ export default function App() {
       {/* Floating WhatsApp */}
       <a 
         href="#" 
-        className="fixed bottom-8 right-8 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-[100] group"
+        className="fixed bottom-8 right-8 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-all duration-1000 z-[100] group"
       >
-        <MessageCircle className="w-8 h-8 text-white" />
+        <MessageCircle className="w-8 h-8 text-white group-hover:scale-105 transition-transform duration-1000" />
       </a>
 
       {/* Calendly Modal */}
