@@ -13,7 +13,6 @@ export interface Translation {
     title: string;
     subtitle: string;
     cta1: string;
-    cta2: string;
   };
   services: {
     badge: string;
@@ -37,6 +36,9 @@ export interface Translation {
     propertyValue: string;
     downPayment: string;
     interestRate: string;
+    taxRate: string;
+    insurance: string;
+    hoa: string;
     monthlyPayment: string;
     cta: string;
   };
@@ -65,22 +67,21 @@ export const translations: Record<Language, Translation> = {
       book: "Agenda tu Asesoría"
     },
     hero: {
-      badge: "+500 Familias Felices",
-      title: "Ayudo a personas a encontrar más que una casa.",
-      subtitle: "Estratega inmobiliario con 6 años de experiencia en el mercado de Houston, TX. Transformando transacciones en legados familiares.",
-      cta1: "Agenda tu Asesoría Gratuita",
-      cta2: "Calcula tu Hipoteca"
+      badge: "+100 Familias Felices",
+      title: "Estás un paso más cerca de comprar tu casa en Houston (hazlo de la forma correcta)",
+      subtitle: "¿Viste una casa en internet y quieres más información?\nEstoy aquí para ayudarte y guiarte paso a paso para que tomes la mejor decisión.",
+      cta1: "Agenda tu Asesoría Gratuita"
     },
     services: {
       badge: "Nuestros Servicios",
       title: "¿Cómo podemos ayudarte hoy?",
       items: [
-        { title: "Comprar Primera Casa", desc: "Guía experta paso a paso para que logres el sueño de tu hogar propio sin estrés." },
-        { title: "Vender Propiedad", desc: "Estrategias de marketing digital de alto impacto para vender al mejor precio en tiempo récord." },
-        { title: "Inversión Estratégica", desc: "Portafolios inmobiliarios diseñados para generar flujo de caja y plusvalía a largo plazo." },
-        { title: "Asesor de Confianza", desc: "Transparencia absoluta en cada negociación. Tu éxito es nuestra prioridad #1." },
-        { title: "Cerca del Paso", desc: "¿Ya tienes algo en mente? Te ayudamos a cerrar el trato con las mejores condiciones." },
-        { title: "Guía Local Houston", desc: "Conocimiento profundo de cada vecindario, escuelas y proyecciones de crecimiento." }
+        { title: "Comprar mi primera casa", desc: "Te guío paso a paso para que compres con claridad, evites errores y tomes decisiones seguras." },
+        { title: "Vender mi propiedad", desc: "Creamos una estrategia para atraer compradores reales y ayudarte a vender más rápido y al mejor precio posible." },
+        { title: "Invertir en bienes raíces", desc: "Te ayudo a encontrar oportunidades inteligentes en Houston para generar ingresos y crecer tu patrimonio." },
+        { title: "Alquilar una casa", desc: "Te acompaño en todo el proceso para encontrar una propiedad que se adapte a ti y asegurar una experiencia sin complicaciones." },
+        { title: "Ver casas disponibles", desc: "¿Viste una casa en internet o quieres explorar opciones? Te ayudo a encontrar, analizar y visitar las mejores oportunidades." },
+        { title: "Asesoría y guía local", desc: "Si tienes dudas o no sabes por dónde empezar, te explico todo el proceso y te ayudo a tomar las mejores decisiones en Houston." }
       ]
     },
     about: {
@@ -101,6 +102,9 @@ export const translations: Record<Language, Translation> = {
       propertyValue: "Valor de la propiedad",
       downPayment: "Cuota Inicial (20%)",
       interestRate: "Tasa de Interés (%)",
+      taxRate: "Impuestos (Tax Rate %)",
+      insurance: "Seguro Anual ($)",
+      hoa: "HOA Mensual ($)",
       monthlyPayment: "Pago Mensual Estimado",
       cta: "Habla con Argenis"
     },
@@ -118,7 +122,7 @@ export const translations: Record<Language, Translation> = {
       privacy: "Política de Privacidad",
       terms: "Términos de Servicio",
       contact: "Contacto",
-      rights: "© 2026 Azeta Homes. Curado por Argenis Zabala."
+      rights: "© 2026 Azeta Homes."
     }
   },
   en: {
@@ -130,22 +134,21 @@ export const translations: Record<Language, Translation> = {
       book: "Schedule Consultation"
     },
     hero: {
-      badge: "+500 Happy Families",
-      title: "I help people find more than just a house.",
-      subtitle: "Real estate strategist with 6 years of experience in the Houston, TX market. Transforming transactions into family legacies.",
-      cta1: "Book Your Free Consultation",
-      cta2: "Calculate Your Mortgage"
+      badge: "+100 Happy Families",
+      title: "You are one step closer to buying your home in Houston (do it the right way)",
+      subtitle: "Did you see a house online and want more information?\nI am here to help and guide you step by step so you can make the best decision.",
+      cta1: "Book Your Free Consultation"
     },
     services: {
       badge: "Our Services",
       title: "How can we help you today?",
       items: [
-        { title: "Buy First Home", desc: "Expert step-by-step guide to achieving your dream of homeownership stress-free." },
-        { title: "Sell Property", desc: "High-impact digital marketing strategies to sell at the best price in record time." },
-        { title: "Strategic Investment", desc: "Real estate portfolios designed to generate cash flow and long-term appreciation." },
-        { title: "Trusted Advisor", desc: "Absolute transparency in every negotiation. Your success is our #1 priority." },
-        { title: "Close to the Deal", desc: "Already have something in mind? We help you close the deal with the best conditions." },
-        { title: "Houston Local Guide", desc: "Deep knowledge of every neighborhood, schools, and growth projections." }
+        { title: "Buy my first home", desc: "I guide you step by step so you buy with clarity, avoid mistakes, and make safe decisions." },
+        { title: "Sell my property", desc: "We create a strategy to attract real buyers and help you sell faster and at the best possible price." },
+        { title: "Invest in real estate", desc: "I help you find smart opportunities in Houston to generate income and grow your wealth." },
+        { title: "Rent a house", desc: "I accompany you throughout the process to find a property that suits you and ensure a hassle-free experience." },
+        { title: "View available homes", desc: "Did you see a house online or want to explore options? I help you find, analyze, and visit the best opportunities." },
+        { title: "Local advice and guide", desc: "If you have doubts or don't know where to start, I explain the whole process and help you make the best decisions in Houston." }
       ]
     },
     about: {
@@ -166,6 +169,9 @@ export const translations: Record<Language, Translation> = {
       propertyValue: "Property Value",
       downPayment: "Down Payment (20%)",
       interestRate: "Interest Rate (%)",
+      taxRate: "Property Tax Rate (%)",
+      insurance: "Annual Insurance ($)",
+      hoa: "Monthly HOA ($)",
       monthlyPayment: "Estimated Monthly Payment",
       cta: "Talk to Argenis"
     },
@@ -183,7 +189,7 @@ export const translations: Record<Language, Translation> = {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       contact: "Contact",
-      rights: "© 2026 Azeta Homes. Curated by Argenis Zabala."
+      rights: "© 2026 Azeta Homes."
     }
   }
 };
