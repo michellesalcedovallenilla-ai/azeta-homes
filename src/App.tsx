@@ -193,11 +193,11 @@ const Navbar = ({ lang, setLang, onOpenCalendly }: { lang: Language, setLang: (l
 
   return (
     <nav className={cn(
-      "fixed top-0 w-full z-50 transition-all duration-500 px-4 py-4 md:px-12",
-      isScrolled ? "bg-surface/80 backdrop-blur-xl py-3 shadow-lg" : "bg-transparent"
+      "fixed top-0 w-full z-50 transition-all duration-500 px-4 py-3 md:py-4 md:px-12",
+      isScrolled ? "bg-surface/80 backdrop-blur-xl py-2 md:py-3 shadow-lg" : "bg-transparent"
     )}>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <a href="/" className="h-10 md:h-12 lg:h-14 flex items-center shrink-0 transition-transform hover:scale-105">
+        <a href="/" className="h-7 sm:h-8 md:h-12 lg:h-14 flex items-center shrink-0 transition-transform hover:scale-105">
           <svg viewBox="0 0 550 120" className="h-full w-auto fill-current text-on-surface" xmlns="http://www.w3.org/2000/svg">
             <g transform="translate(60, 60) scale(1.2)">
               <path d="M -35 20 L -5 20 L 25 -30 L -5 -30 Z" />
@@ -229,22 +229,22 @@ const Navbar = ({ lang, setLang, onOpenCalendly }: { lang: Language, setLang: (l
           ))}
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
           <button 
             onClick={() => setIsDark(!isDark)}
-            className="text-on-surface-variant hover:text-on-surface transition-colors"
+            className="text-on-surface-variant hover:text-on-surface transition-colors p-1"
           >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {isDark ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
           <button 
             onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-            className="text-on-surface-variant hover:text-on-surface font-label text-xs uppercase tracking-widest"
+            className="text-on-surface-variant hover:text-on-surface font-label text-[10px] md:text-xs uppercase tracking-widest p-1"
           >
             {lang === 'es' ? 'EN' : 'ES'}
           </button>
           <button 
             onClick={onOpenCalendly}
-            className="bg-tertiary text-on-tertiary-fixed font-bold px-3 py-2 md:px-5 md:py-2 rounded-xl hover:scale-95 transition-all duration-200 text-xs md:text-sm whitespace-nowrap"
+            className="bg-tertiary text-on-tertiary-fixed font-bold px-3 py-2 md:px-5 md:py-2 rounded-lg md:rounded-xl hover:scale-95 transition-all duration-200 text-[10px] sm:text-xs md:text-sm whitespace-nowrap"
           >
             {t.book}
           </button>
@@ -430,7 +430,7 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section id="testimonials" className="py-16 md:py-24 bg-transparent relative z-10">
+    <section id="testimonials" className="py-16 md:py-24 bg-transparent relative z-10 overflow-hidden w-full">
       <div className="px-4 md:px-8 max-w-7xl mx-auto">
         <motion.div 
           initial={{ opacity: 0 }}
@@ -831,7 +831,7 @@ export default function App() {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative overflow-x-hidden w-full flex flex-col">
       <SkylineBackground />
       <Navbar lang={lang} setLang={setLang} onOpenCalendly={() => setIsCalendlyOpen(true)} />
       <Hero lang={lang} onOpenCalendly={() => setIsCalendlyOpen(true)} />
