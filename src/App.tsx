@@ -282,19 +282,24 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight md:leading-[1.1] tracking-tight max-w-4xl text-balance"
         >
           {t.title}
-          <span className="block mt-2 md:mt-4 text-lg md:text-xl text-on-surface-variant sm:inline sm:mt-0 sm:text-inherit sm:text-on-surface">
-            {' '}{t.titleSuffix}
+          <span className="hidden md:inline"> </span>
+          <span className="block mt-3 text-2xl text-on-surface-variant md:inline md:mt-0 md:text-5xl lg:text-6xl md:leading-[1.1] md:text-on-surface">
+            {t.titleSuffix}
           </span>
         </motion.h1>
 
-        <motion.p 
+        <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-          className="max-w-3xl mx-auto text-on-surface-variant text-sm sm:text-base md:text-lg font-light leading-relaxed whitespace-pre-wrap text-balance"
+          className="max-w-3xl mx-auto text-on-surface-variant font-light leading-relaxed px-4"
         >
-          {t.subtitle}
-        </motion.p>
+          {t.subtitle.split('\n\n').map((line, i) => (
+            <p key={i} className={`mx-auto text-balance ${i === 1 ? "text-[15px] sm:text-lg md:text-xl mt-4 max-w-[280px] sm:max-w-none" : "text-base sm:text-lg md:text-xl"}`}>
+              {line}
+            </p>
+          ))}
+        </motion.div>
 
         <motion.div 
           initial={{ opacity: 0 }}
@@ -654,8 +659,8 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
             <h2 className="font-headline text-2xl md:text-4xl mb-2 text-on-surface">{t.title}</h2>
             <p className="text-on-surface-variant">{t.subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch">
+            <div className="space-y-6 flex flex-col justify-between">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.propertyValue}</label>
@@ -733,8 +738,8 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 md:col-span-1">
                   <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.insurance} /yr</label>
                   <div className="relative">
                     <span className="absolute left-0 bottom-2 text-tertiary">$</span>
@@ -746,7 +751,7 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                     />
                   </div>
                 </div>
-                <div>
+                <div className="col-span-1">
                   <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.hoa} /mo</label>
                   <div className="relative">
                     <span className="absolute left-0 bottom-2 text-tertiary">$</span>
@@ -758,7 +763,7 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                     />
                   </div>
                 </div>
-                <div>
+                <div className="col-span-1 md:col-span-2">
                   <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.pmi}</label>
                   <div className="relative">
                     <span className="absolute left-0 bottom-2 text-tertiary">$</span>
@@ -772,19 +777,21 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                 </div>
               </div>
             </div>
-            <div className="bg-surface-container-high rounded-3xl p-6 md:p-10 flex flex-col justify-center items-center text-center">
-              <p className="text-xs font-label uppercase tracking-[0.2em] text-on-surface-variant mb-4">{t.monthlyPayment}</p>
-              <p className="text-4xl md:text-6xl font-headline text-tertiary mb-8">${monthly.toLocaleString()}</p>
+            <div className="bg-surface-container-high rounded-3xl p-6 md:p-8 flex flex-col justify-between items-center text-center h-full">
+              <div className="w-full shrink-0">
+                <p className="text-xs font-label uppercase tracking-[0.2em] text-on-surface-variant mb-2">{t.monthlyPayment}</p>
+                <p className="text-4xl md:text-5xl font-headline text-tertiary mb-4">${monthly.toLocaleString()}</p>
+              </div>
               
-              <div className="w-full h-64 mb-8">
+              <div className="w-full flex-1 min-h-[180px] max-h-[240px] mb-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={data}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
+                      innerRadius="60%"
+                      outerRadius="80%"
                       paddingAngle={5}
                       dataKey="value"
                     >
@@ -800,12 +807,12 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                 </ResponsiveContainer>
               </div>
 
-              <div className="w-full grid grid-cols-2 gap-4 mb-8 text-left">
+              <div className="w-full grid grid-cols-2 gap-x-2 gap-y-4 mb-6 text-left shrink-0">
                 {data.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase tracking-wider text-on-surface-variant">{item.name}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-on-surface-variant leading-tight">{item.name}</span>
                       <span className="text-sm font-bold">${Math.round(item.value).toLocaleString()}</span>
                     </div>
                   </div>
@@ -814,7 +821,7 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
 
               <button 
                 onClick={onOpenCalendly}
-                className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-3 md:py-4 rounded-xl hover:bg-tertiary/90 hover:scale-[1.02] transition-all duration-1000 text-sm md:text-base"
+                className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-3 md:py-4 rounded-xl hover:bg-tertiary/90 hover:scale-[1.02] transition-all duration-1000 text-sm md:text-base mt-auto"
               >
                 {t.cta}
               </button>

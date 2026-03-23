@@ -75,7 +75,7 @@ export const translations: Record<Language, Translation> = {
       badge: "+100 Familias Felices",
       title: "Estás un paso más cerca de comprar tu casa en Houston",
       titleSuffix: "(hazlo de la forma correcta)",
-      subtitle: "¿Viste una casa en internet y quieres más información?\nEstoy aquí para ayudarte y guiarte paso a paso para que tomes la mejor decisión.",
+      subtitle: "¿Viste una casa en internet y quieres más información?\n\nEstoy aquí para ayudarte y guiarte paso a paso para que tomes la mejor decisión.",
       cta1: "Agenda tu Asesoría Gratuita"
     },
     services: {
@@ -147,7 +147,7 @@ export const translations: Record<Language, Translation> = {
       badge: "+100 Happy Families",
       title: "You are one step closer to buying your home in Houston",
       titleSuffix: "(do it the right way)",
-      subtitle: "Did you see a house online and want more information?\nI am here to help and guide you step by step so you can make the best decision.",
+      subtitle: "Did you see a house online and want more information?\n\nI am here to help and guide you step by step so you can make the best decision.",
       cta1: "Book Your Free Consultation"
     },
     services: {
