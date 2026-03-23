@@ -260,7 +260,7 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
   const isMobile = useIsMobile();
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-24 md:pt-32 pb-8">
-      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl space-y-6 md:space-y-8 flex-1 flex flex-col justify-center items-center">
+      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl space-y-4 md:space-y-8 flex-1 flex flex-col justify-center items-center">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -279,16 +279,19 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-          className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-[1.1] tracking-tight max-w-4xl text-balance"
+          className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight md:leading-[1.1] tracking-tight max-w-4xl text-balance"
         >
           {t.title}
+          <span className="block mt-2 md:mt-4 text-lg md:text-xl text-on-surface-variant sm:inline sm:mt-0 sm:text-inherit sm:text-on-surface">
+            {' '}{t.titleSuffix}
+          </span>
         </motion.h1>
 
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-          className="max-w-3xl mx-auto text-on-surface-variant text-base md:text-lg font-light leading-relaxed whitespace-pre-wrap text-balance"
+          className="max-w-3xl mx-auto text-on-surface-variant text-sm sm:text-base md:text-lg font-light leading-relaxed whitespace-pre-wrap text-balance"
         >
           {t.subtitle}
         </motion.p>
@@ -952,11 +955,11 @@ export default function App() {
         >
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px]" />
-          <div className="relative z-10 max-w-3xl mx-auto space-y-8 md:space-y-10">
-            <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl text-on-surface text-balance">
+          <div className="relative z-10 max-w-3xl mx-auto space-y-6 md:space-y-10">
+            <h2 className="font-headline text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-on-surface text-balance">
               {lang === 'es' ? '¿Estás listo para dar el siguiente paso?' : 'Are you ready to take the next step?'}
             </h2>
-            <p className="text-on-surface-variant text-lg md:text-xl">
+            <p className="text-on-surface-variant text-base md:text-xl">
               {lang === 'es' ? 'Houston te espera. Hagamos que tu visión se convierta en tu dirección.' : 'Houston awaits you. Let\'s turn your vision into your address.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center pt-4 md:pt-6">
