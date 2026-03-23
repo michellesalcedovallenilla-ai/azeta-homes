@@ -39,6 +39,10 @@ export interface Translation {
     taxRate: string;
     insurance: string;
     hoa: string;
+    pmi: string;
+    zipCode: string;
+    principalAndInterest?: string;
+    propertyTax?: string;
     monthlyPayment: string;
     cta: string;
   };
@@ -106,6 +110,9 @@ export const translations: Record<Language, Translation> = {
       insurance: "Seguro Anual ($)",
       hoa: "HOA Mensual ($)",
       pmi: "PMI Mensual ($)",
+      zipCode: "Código Postal",
+      principalAndInterest: "Principal e Interés",
+      propertyTax: "Impuestos",
       monthlyPayment: "Pago Mensual Estimado",
       cta: "Habla con Argenis"
     },
@@ -174,6 +181,9 @@ export const translations: Record<Language, Translation> = {
       insurance: "Annual Insurance ($)",
       hoa: "Monthly HOA ($)",
       pmi: "Monthly PMI ($)",
+      zipCode: "Zip Code",
+      principalAndInterest: "Principal & Interest",
+      propertyTax: "Property Taxes",
       monthlyPayment: "Estimated Monthly Payment",
       cta: "Talk to Argenis"
     },

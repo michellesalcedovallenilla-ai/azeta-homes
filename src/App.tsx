@@ -9,6 +9,7 @@ import {
 import { cn } from './lib/utils';
 import { translations, Language } from './constants/translations';
 import { PopupModal } from 'react-calendly';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 // --- Hooks ---
 const useIsMobile = () => {
@@ -278,7 +279,7 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-          className="font-headline text-[2.25rem] leading-[1.1] sm:text-5xl lg:text-6xl text-on-surface tracking-tight max-w-4xl text-balance"
+          className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-[1.1] tracking-tight max-w-4xl text-balance"
         >
           {t.title}
         </motion.h1>
@@ -350,24 +351,20 @@ const Services = ({ lang }: { lang: Language }) => {
         className="text-center mb-16"
       >
         <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
-        <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl mt-4 text-on-surface text-balance">{t.title}</h2>
+        <h2 className="font-headline text-2xl md:text-4xl lg:text-5xl mt-4 text-on-surface text-balance">{t.title}</h2>
       </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {t.items.map((item, idx) => {
           const Icon = icons[idx] || Home;
           return (
-            <motion.div 
+            <div 
               key={idx}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, delay: idx * 0.15, ease: "easeOut" }}
-              className="bg-surface-container-low/80 backdrop-blur-sm p-6 md:p-10 rounded-3xl group hover:bg-surface-container-high transition-all duration-1000 border border-outline-variant/5"
+              className="bg-surface-container-low/80 backdrop-blur-sm p-6 md:p-10 rounded-3xl group border border-outline-variant/5"
             >
-              <Icon className="w-10 h-10 text-tertiary mb-6 transition-transform duration-1000" />
+              <Icon className="w-10 h-10 text-tertiary mb-6" />
               <h3 className="text-xl font-bold mb-4 text-on-surface">{item.title}</h3>
               <p className="text-on-surface-variant leading-relaxed">{item.desc}</p>
-            </motion.div>
+            </div>
           );
         })}
       </div>
@@ -584,7 +581,7 @@ const About = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () =>
           className="space-y-8"
         >
           <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
-          <h2 className="font-headline text-4xl md:text-5xl leading-tight text-on-surface text-balance">{t.title}</h2>
+          <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl leading-tight text-on-surface text-balance">{t.title}</h2>
           <p className="text-on-surface-variant text-lg leading-relaxed">{t.desc}</p>
           <div className="space-y-4">
             {t.points.map((p, i) => (
@@ -615,6 +612,7 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
   const [insurance, setInsurance] = useState(1200);
   const [hoa, setHoa] = useState(0);
   const [pmi, setPmi] = useState(0);
+  const [zipCode, setZipCode] = useState("77001");
 
   const principalAndInterest = ((value - down) * (rate / 100 / 12)) / (1 - Math.pow(1 + rate / 100 / 12, -360));
   const monthlyTax = (value * (taxRate / 100)) / 12;
@@ -631,9 +629,17 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
     setDown((value * pct) / 100);
   };
 
+  const data = [
+    { name: t.principalAndInterest || 'Principal & Interest', value: principalAndInterest, color: '#F27D26' },
+    { name: t.propertyTax || 'Property Taxes', value: monthlyTax, color: '#141414' },
+    { name: t.insurance || 'Home Insurance', value: monthlyInsurance, color: '#E4E3E0' },
+    { name: t.hoa || 'HOA', value: monthlyHoa, color: '#8E9299' },
+    { name: t.pmi || 'PMI', value: monthlyPmi, color: '#A0A0A0' },
+  ].filter(item => item.value > 0);
+
   return (
     <section id="calculator" className="py-16 md:py-24 bg-transparent relative z-10">
-      <div className="max-w-4xl mx-auto px-4 md:px-8">
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -642,21 +648,35 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
           className="bg-surface-container-lowest/40 backdrop-blur-md p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] border border-white/10 shadow-2xl"
         >
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl mb-2 text-on-surface">{t.title}</h2>
+            <h2 className="font-headline text-2xl md:text-4xl mb-2 text-on-surface">{t.title}</h2>
             <p className="text-on-surface-variant">{t.subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             <div className="space-y-6">
-              <div>
-                <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.propertyValue}</label>
-                <div className="relative">
-                  <span className="absolute left-0 bottom-2 text-tertiary">$</span>
-                  <input 
-                    type="number"
-                    value={value}
-                    onChange={(e) => setValue(Number(e.target.value))}
-                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.propertyValue}</label>
+                  <div className="relative">
+                    <span className="absolute left-0 bottom-2 text-tertiary">$</span>
+                    <input 
+                      type="number"
+                      value={value}
+                      onChange={(e) => setValue(Number(e.target.value))}
+                      className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.zipCode}</label>
+                  <div className="relative">
+                    <input 
+                      type="text"
+                      value={zipCode}
+                      onChange={(e) => setZipCode(e.target.value)}
+                      className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pb-2 text-xl font-bold" 
+                      placeholder="e.g. 77001"
+                    />
+                  </div>
                 </div>
               </div>
               <div>
@@ -752,6 +772,43 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
             <div className="bg-surface-container-high rounded-3xl p-6 md:p-10 flex flex-col justify-center items-center text-center">
               <p className="text-xs font-label uppercase tracking-[0.2em] text-on-surface-variant mb-4">{t.monthlyPayment}</p>
               <p className="text-4xl md:text-6xl font-headline text-tertiary mb-8">${monthly.toLocaleString()}</p>
+              
+              <div className="w-full h-64 mb-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {data.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value: number) => `$${Math.round(value).toLocaleString()}`}
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="w-full grid grid-cols-2 gap-4 mb-8 text-left">
+                {data.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-wider text-on-surface-variant">{item.name}</span>
+                      <span className="text-sm font-bold">${Math.round(item.value).toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <button 
                 onClick={onOpenCalendly}
                 className="w-full bg-tertiary text-on-tertiary-fixed font-bold py-3 md:py-4 rounded-xl hover:bg-tertiary/90 hover:scale-[1.02] transition-all duration-1000 text-sm md:text-base"
@@ -896,7 +953,7 @@ export default function App() {
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px]" />
           <div className="relative z-10 max-w-3xl mx-auto space-y-8 md:space-y-10">
-            <h2 className="font-headline text-3xl md:text-5xl lg:text-6xl text-on-surface text-balance">
+            <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl text-on-surface text-balance">
               {lang === 'es' ? '¿Estás listo para dar el siguiente paso?' : 'Are you ready to take the next step?'}
             </h2>
             <p className="text-on-surface-variant text-lg md:text-xl">
