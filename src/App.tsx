@@ -278,7 +278,7 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-          className="font-headline text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight tracking-tight max-w-4xl"
+          className="font-headline text-[2.25rem] leading-[1.1] sm:text-5xl lg:text-6xl text-on-surface tracking-tight max-w-4xl text-balance"
         >
           {t.title}
         </motion.h1>
@@ -287,7 +287,7 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-          className="max-w-3xl mx-auto text-on-surface-variant text-base md:text-lg font-light leading-relaxed whitespace-pre-wrap"
+          className="max-w-3xl mx-auto text-on-surface-variant text-base md:text-lg font-light leading-relaxed whitespace-pre-wrap text-balance"
         >
           {t.subtitle}
         </motion.p>
@@ -350,7 +350,7 @@ const Services = ({ lang }: { lang: Language }) => {
         className="text-center mb-16"
       >
         <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
-        <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl mt-4 text-on-surface">{t.title}</h2>
+        <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl mt-4 text-on-surface text-balance">{t.title}</h2>
       </motion.div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {t.items.map((item, idx) => {
@@ -442,7 +442,7 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
           <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">
             {lang === 'es' ? 'Testimonios' : 'Testimonials'}
           </span>
-          <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl mt-4 text-on-surface">
+          <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl mt-4 text-on-surface text-balance">
             {lang === 'es' ? 'Historias que inspiran' : 'Stories that inspire'}
           </h2>
         </motion.div>
@@ -462,23 +462,33 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
                   const isVisible = isCenter || isLeft || isRight;
 
                   return (
-                    <motion.div
-                      key={item.url}
-                      initial={false}
-                      animate={{ 
-                        opacity: isCenter ? 1 : isVisible ? 0.4 : 0, 
-                        scale: isCenter ? 1 : isVisible ? 0.85 : 0.7,
-                        x: offset * (typeof window !== 'undefined' && window.innerWidth < 768 ? 140 : 250),
-                        zIndex: isCenter ? 10 : isVisible ? 5 : 0,
-                        filter: isCenter ? 'blur(0px)' : 'blur(4px)',
-                        pointerEvents: isCenter ? 'auto' : 'none'
-                      }}
-                      transition={{ type: 'spring', stiffness: 40, damping: 30, mass: 1 }}
-                      className="absolute w-[280px] md:w-[380px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl cursor-pointer border border-white/10 group"
-                      onClick={() => {
-                        if (isVisible) setActiveIndex(idx);
-                      }}
-                  >
+                      <motion.div
+                        key={item.url}
+                        initial={false}
+                        animate={{ 
+                          opacity: isCenter ? 1 : isVisible ? 0.4 : 0, 
+                          scale: isCenter ? 1 : isVisible ? 0.85 : 0.7,
+                          x: offset * (typeof window !== 'undefined' && window.innerWidth < 768 ? 140 : 250),
+                          zIndex: isCenter ? 10 : isVisible ? 5 : 0,
+                          filter: isCenter ? 'blur(0px)' : 'blur(4px)',
+                          pointerEvents: isCenter ? 'auto' : 'none'
+                        }}
+                        transition={{ type: 'spring', stiffness: 40, damping: 30, mass: 1 }}
+                        className="absolute w-[280px] md:w-[380px] aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl cursor-pointer border border-white/10 group"
+                        onClick={() => {
+                          if (isVisible) setActiveIndex(idx);
+                        }}
+                        drag={isCenter ? "x" : false}
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={0.2}
+                        onDragEnd={(e, { offset, velocity }) => {
+                          if (offset.x < -50 || velocity.x < -500) {
+                            setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+                          } else if (offset.x > 50 || velocity.x > 500) {
+                            setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+                          }
+                        }}
+                    >
                     <img 
                       src={item.url} 
                       alt={`Success Story ${idx}`} 
@@ -574,7 +584,7 @@ const About = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () =>
           className="space-y-8"
         >
           <span className="text-tertiary font-label uppercase tracking-[0.3em] text-sm">{t.badge}</span>
-          <h2 className="font-headline text-4xl md:text-5xl leading-tight text-on-surface">{t.title}</h2>
+          <h2 className="font-headline text-4xl md:text-5xl leading-tight text-on-surface text-balance">{t.title}</h2>
           <p className="text-on-surface-variant text-lg leading-relaxed">{t.desc}</p>
           <div className="space-y-4">
             {t.points.map((p, i) => (
@@ -604,13 +614,22 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
   const [taxRate, setTaxRate] = useState(1.2);
   const [insurance, setInsurance] = useState(1200);
   const [hoa, setHoa] = useState(0);
+  const [pmi, setPmi] = useState(0);
 
   const principalAndInterest = ((value - down) * (rate / 100 / 12)) / (1 - Math.pow(1 + rate / 100 / 12, -360));
   const monthlyTax = (value * (taxRate / 100)) / 12;
   const monthlyInsurance = insurance / 12;
   const monthlyHoa = hoa;
+  const monthlyPmi = pmi;
 
-  const monthly = Math.round(principalAndInterest + monthlyTax + monthlyInsurance + monthlyHoa);
+  const monthly = Math.round(principalAndInterest + monthlyTax + monthlyInsurance + monthlyHoa + monthlyPmi);
+
+  const downPercent = value > 0 ? ((down / value) * 100).toFixed(1) : "0";
+
+  const handleDownPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pct = Number(e.target.value);
+    setDown((value * pct) / 100);
+  };
 
   return (
     <section id="calculator" className="py-16 md:py-24 bg-transparent relative z-10">
@@ -642,14 +661,25 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
               </div>
               <div>
                 <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.downPayment}</label>
-                <div className="relative">
-                  <span className="absolute left-0 bottom-2 text-tertiary">$</span>
-                  <input 
-                    type="number"
-                    value={down}
-                    onChange={(e) => setDown(Number(e.target.value))}
-                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
-                  />
+                <div className="flex gap-4">
+                  <div className="relative flex-1">
+                    <span className="absolute left-0 bottom-2 text-tertiary">$</span>
+                    <input 
+                      type="number"
+                      value={down}
+                      onChange={(e) => setDown(Number(e.target.value))}
+                      className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
+                    />
+                  </div>
+                  <div className="relative w-24">
+                    <input 
+                      type="number"
+                      value={downPercent}
+                      onChange={handleDownPercentChange}
+                      className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pb-2 text-xl font-bold" 
+                    />
+                    <span className="absolute right-0 bottom-2 text-on-surface-variant">%</span>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -680,7 +710,7 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.insurance} /yr</label>
                   <div className="relative">
@@ -701,6 +731,18 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
                       type="number"
                       value={hoa}
                       onChange={(e) => setHoa(Number(e.target.value))}
+                      className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">{t.pmi}</label>
+                  <div className="relative">
+                    <span className="absolute left-0 bottom-2 text-tertiary">$</span>
+                    <input 
+                      type="number"
+                      value={pmi}
+                      onChange={(e) => setPmi(Number(e.target.value))}
                       className="w-full bg-transparent border-0 border-b border-outline-variant/30 focus:border-tertiary focus:ring-0 pl-6 pb-2 text-xl font-bold" 
                     />
                   </div>
@@ -737,7 +779,7 @@ const FAQ = ({ lang }: { lang: Language }) => {
         transition={{ duration: 0.8 }}
         className="text-center mb-16"
       >
-        <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl text-on-surface tracking-tight">{t.title}</h2>
+        <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl text-on-surface tracking-tight text-balance">{t.title}</h2>
         <div className="w-12 h-0.5 bg-tertiary/30 mx-auto mt-6" />
       </motion.div>
       <div className="max-w-3xl mx-auto space-y-4">
@@ -854,7 +896,7 @@ export default function App() {
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px]" />
           <div className="relative z-10 max-w-3xl mx-auto space-y-8 md:space-y-10">
-            <h2 className="font-headline text-3xl md:text-5xl lg:text-6xl text-on-surface">
+            <h2 className="font-headline text-3xl md:text-5xl lg:text-6xl text-on-surface text-balance">
               {lang === 'es' ? '¿Estás listo para dar el siguiente paso?' : 'Are you ready to take the next step?'}
             </h2>
             <p className="text-on-surface-variant text-lg md:text-xl">
