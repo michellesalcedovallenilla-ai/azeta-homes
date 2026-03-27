@@ -260,11 +260,30 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(false);
 
   const handlePlayVideo = () => {
     if (videoRef.current) {
-      videoRef.current.play();
-      setIsPlaying(true);
+      setIsLoadingVideo(true);
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+        setIsLoadingVideo(false);
+      }).catch((error) => {
+        console.error("Error playing video:", error);
+        // Sometimes browsers require the video to be muted to play initially
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play().then(() => {
+            setIsPlaying(true);
+            setIsLoadingVideo(false);
+          }).catch(e => {
+            console.error("Still failing to play:", e);
+            setIsLoadingVideo(false);
+          });
+        } else {
+          setIsLoadingVideo(false);
+        }
+      });
     }
   };
 
@@ -321,19 +340,26 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           <video 
             ref={videoRef}
             className="w-full h-full object-cover"
-            src="/videohere_opt.mp4"
             playsInline
             controls={isPlaying}
+            preload="metadata"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
-          />
+          >
+            <source src="/videohere_opt.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
           {!isPlaying && (
             <div 
               className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer group transition-opacity"
-              onClick={handlePlayVideo}
+              onClick={isLoadingVideo ? undefined : handlePlayVideo}
             >
               <div className="w-20 h-20 md:w-24 md:h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-500 group-hover:scale-110">
-                <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current ml-2" />
+                {isLoadingVideo ? (
+                  <div className="w-8 h-8 md:w-10 md:h-10 border-4 border-on-tertiary-fixed border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current ml-2" />
+                )}
               </div>
             </div>
           )}
