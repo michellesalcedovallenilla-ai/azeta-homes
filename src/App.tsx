@@ -307,13 +307,14 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
           className="w-full max-w-4xl mx-auto mt-8 relative aspect-video rounded-3xl overflow-hidden group cursor-pointer shadow-2xl border border-white/10"
         >
-          <img 
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
-            src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1920" 
-            alt="Video Thumbnail" 
-            referrerPolicy="no-referrer"
+          <iframe
+            className="w-full h-full transition-transform duration-1000 group-hover:scale-105 pointer-events-none"
+            src="https://www.youtube.com/embed/j9hHXiomz4Q?autoplay=1&mute=1&loop=1&playlist=j9hHXiomz4Q&controls=0&rel=0&modestbranding=1&playsinline=1"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ border: 'none' }}
           />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity group-hover:opacity-60">
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity group-hover:opacity-0">
             <div className="w-20 h-20 md:w-24 md:h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-500 group-hover:scale-110">
               <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current" />
             </div>
@@ -977,7 +978,7 @@ export default function App() {
                 {lang === 'es' ? 'Agenda tu Cita Ahora' : 'Schedule Your Appointment Now'}
               </button>
               <a 
-                href="https://wa.me/1234567890" 
+                href="https://wa.me/18323887224" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto bg-surface-container-high border border-outline-variant/20 text-on-surface font-bold px-8 py-4 md:px-12 md:py-5 rounded-2xl text-base md:text-lg hover:bg-surface-container-highest transition-all duration-1000 backdrop-blur-sm flex items-center justify-center gap-2"
@@ -994,7 +995,9 @@ export default function App() {
 
       {/* Floating WhatsApp */}
       <a 
-        href="#" 
+        href="https://wa.me/18323887224" 
+        target="_blank"
+        rel="noopener noreferrer"
         className="fixed bottom-8 right-8 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-all duration-1000 z-[100] group"
       >
         <MessageCircle className="w-8 h-8 text-white group-hover:scale-105 transition-transform duration-1000" />
@@ -1003,7 +1006,7 @@ export default function App() {
       {/* Calendly Modal */}
       {typeof window !== 'undefined' && (
         <PopupModal
-          url="https://calendly.com/argeniszabala"
+          url="https://calendly.com/argeniszabalarealtor/real-estate-consultation"
           onModalClose={() => setIsCalendlyOpen(false)}
           open={isCalendlyOpen}
           rootElement={document.getElementById('root') as HTMLElement}
