@@ -258,6 +258,16 @@ const Navbar = ({ lang, setLang, onOpenCalendly }: { lang: Language, setLang: (l
 const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => void }) => {
   const t = translations[lang].hero;
   const isMobile = useIsMobile();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-24 md:pt-32 pb-8">
       <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl space-y-4 md:space-y-8 flex-1 flex flex-col justify-center items-center">
@@ -281,9 +291,12 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
           className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight md:leading-[1.1] tracking-tight max-w-4xl text-balance"
         >
-          {t.title}
-          <span className="hidden md:inline"> </span>
-          <span className="block mt-3 text-2xl text-on-surface-variant md:inline md:mt-0 md:text-5xl lg:text-6xl md:leading-[1.1] md:text-on-surface">
+          <span className="block">{t.titleLine1}</span>
+          <span className="block">
+            {t.titleLine2}
+            <span className="text-tertiary">{t.titleHighlight}</span>
+          </span>
+          <span className="block mt-3 text-2xl text-on-surface-variant md:mt-4 md:text-5xl lg:text-6xl md:leading-[1.1]">
             {t.titleSuffix}
           </span>
         </motion.h1>
@@ -294,31 +307,36 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
           className="max-w-3xl mx-auto text-on-surface-variant font-light leading-relaxed px-4"
         >
-          {t.subtitle.split('\n\n').map((line, i) => (
-            <p key={i} className={`mx-auto text-balance ${i === 1 ? "text-[15px] sm:text-lg md:text-xl mt-4 max-w-[280px] sm:max-w-none" : "text-base sm:text-lg md:text-xl"}`}>
-              {line}
-            </p>
-          ))}
+          <p className="mx-auto text-balance text-base sm:text-lg md:text-xl">
+            {t.subtitle}
+          </p>
         </motion.div>
 
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
-          className="w-full max-w-4xl mx-auto mt-8 relative aspect-video rounded-3xl overflow-hidden group cursor-pointer shadow-2xl border border-white/10"
+          className="w-full max-w-4xl mx-auto mt-8 relative aspect-video rounded-3xl overflow-hidden shadow-2xl border border-white/10"
         >
-          <iframe
-            className="w-full h-full transition-transform duration-1000 group-hover:scale-105 pointer-events-none"
-            src="https://www.youtube.com/embed/j9hHXiomz4Q?autoplay=1&mute=1&loop=1&playlist=j9hHXiomz4Q&controls=0&rel=0&modestbranding=1&playsinline=1"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{ border: 'none' }}
+          <video 
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            src="/videohere_opt.mp4"
+            playsInline
+            controls={isPlaying}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
           />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity group-hover:opacity-0">
-            <div className="w-20 h-20 md:w-24 md:h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-500 group-hover:scale-110">
-              <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current" />
+          {!isPlaying && (
+            <div 
+              className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer group transition-opacity"
+              onClick={handlePlayVideo}
+            >
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-500 group-hover:scale-110">
+                <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current ml-2" />
+              </div>
             </div>
-          </div>
+          )}
         </motion.div>
 
         <motion.div 

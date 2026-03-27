@@ -10,7 +10,9 @@ export interface Translation {
   };
   hero: {
     badge: string;
-    title: string;
+    titleLine1: string;
+    titleLine2: string;
+    titleHighlight: string;
     titleSuffix: string;
     subtitle: string;
     cta1: string;
@@ -73,9 +75,11 @@ export const translations: Record<Language, Translation> = {
     },
     hero: {
       badge: "+100 Familias Felices",
-      title: "Estás un paso más cerca de comprar tu casa en Houston",
+      titleLine1: "Estás un paso más cerca",
+      titleLine2: "de comprar tu casa en ",
+      titleHighlight: "Houston",
       titleSuffix: "(hazlo de la forma correcta)",
-      subtitle: "¿Viste una casa en internet y quieres más información?\n\nEstoy aquí para ayudarte y guiarte paso a paso para que tomes la mejor decisión.",
+      subtitle: "Estoy aquí para ayudarte y guiarte paso a paso para que tomes la mejor decisión.",
       cta1: "Agenda tu Asesoría Gratuita"
     },
     services: {
@@ -145,9 +149,11 @@ export const translations: Record<Language, Translation> = {
     },
     hero: {
       badge: "+100 Happy Families",
-      title: "You are one step closer to buying your home in Houston",
+      titleLine1: "You are one step closer",
+      titleLine2: "to buying your home in ",
+      titleHighlight: "Houston",
       titleSuffix: "(do it the right way)",
-      subtitle: "Did you see a house online and want more information?\n\nI am here to help and guide you step by step so you can make the best decision.",
+      subtitle: "I am here to help and guide you step by step so you can make the best decision.",
       cta1: "Book Your Free Consultation"
     },
     services: {
