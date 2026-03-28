@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { 
   Menu, X, Home, Image as ImageIcon, User, Calculator, 
-  HelpCircle, Calendar, Play, ArrowRight, CheckCircle2,
+  HelpCircle, Calendar, ArrowRight, CheckCircle2,
   TrendingUp, Tag, BadgeCheck, Map as MapIcon, ChevronDown,
-  Instagram, Linkedin, MessageCircle, Sun, Moon, Compass
+  Instagram, MessageCircle, Sun, Moon, Compass
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { translations, Language } from './constants/translations';
@@ -259,33 +259,7 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
   const t = translations[lang].hero;
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoadingVideo, setIsLoadingVideo] = useState(false);
-
-  const handlePlayVideo = () => {
-    if (videoRef.current) {
-      setIsLoadingVideo(true);
-      videoRef.current.play().then(() => {
-        setIsPlaying(true);
-        setIsLoadingVideo(false);
-      }).catch((error) => {
-        console.error("Error playing video:", error);
-        // Sometimes browsers require the video to be muted to play initially
-        if (videoRef.current) {
-          videoRef.current.muted = true;
-          videoRef.current.play().then(() => {
-            setIsPlaying(true);
-            setIsLoadingVideo(false);
-          }).catch(e => {
-            console.error("Still failing to play:", e);
-            setIsLoadingVideo(false);
-          });
-        } else {
-          setIsLoadingVideo(false);
-        }
-      });
-    }
-  };
+  const [isPlaying, setIsPlaying] = useState(true);
 
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-24 md:pt-32 pb-8">
@@ -337,32 +311,20 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
           className="w-full max-w-4xl mx-auto mt-8 relative aspect-video rounded-3xl overflow-hidden shadow-2xl border border-white/10"
         >
-          <video 
+          <video
             ref={videoRef}
             className="w-full h-full object-cover"
+            autoPlay
+            muted
             playsInline
-            controls={isPlaying}
-            preload="metadata"
+            controls
+            preload="auto"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
           >
             <source src="/videohere_opt.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          {!isPlaying && (
-            <div 
-              className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer group transition-opacity"
-              onClick={isLoadingVideo ? undefined : handlePlayVideo}
-            >
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-500 group-hover:scale-110">
-                {isLoadingVideo ? (
-                  <div className="w-8 h-8 md:w-10 md:h-10 border-4 border-on-tertiary-fixed border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current ml-2" />
-                )}
-              </div>
-            </div>
-          )}
         </motion.div>
 
         <motion.div 
@@ -961,13 +923,12 @@ const Footer = ({ lang }: { lang: Language }) => {
             <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.contact}</a>
           </div>
           <div className="flex items-center gap-6">
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Instagram className="w-5 h-5" /></a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.instagram.com/argeniszabalarealtor/" target="_blank" rel="noopener noreferrer"><Instagram className="w-5 h-5" /></a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.tiktok.com/@argeniszabalarealtor" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                 <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/>
               </svg>
             </a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Linkedin className="w-5 h-5" /></a>
           </div>
         </div>
         <p className="text-on-surface-variant font-body text-sm text-center md:text-right max-w-xs md:pr-20">
