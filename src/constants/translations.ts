@@ -75,11 +75,11 @@ export const translations: Record<Language, Translation> = {
     },
     hero: {
       badge: "+100 Familias Felices",
-      titleLine1: "Estás un paso más cerca",
-      titleLine2: "de comprar tu casa en ",
+      titleLine1: "El hogar que imaginas para",
+      titleLine2: "tu familia está en ",
       titleHighlight: "Houston",
-      titleSuffix: "(hazlo de la forma correcta)",
-      subtitle: "Estoy aquí para ayudarte y guiarte paso a paso para que tomes la mejor decisión.",
+      titleSuffix: "Te ayudamos a dar el paso correcto.",
+      subtitle: "Encuentra tu espacio ideal con la confianza y experiencia de Argenis en el mercado inmobiliario de Texas.",
       cta1: "Agenda tu Asesoría Gratuita"
     },
     services: {
@@ -149,11 +149,11 @@ export const translations: Record<Language, Translation> = {
     },
     hero: {
       badge: "+100 Happy Families",
-      titleLine1: "You are one step closer",
-      titleLine2: "to buying your home in ",
+      titleLine1: "The home you imagine for",
+      titleLine2: "your family is in ",
       titleHighlight: "Houston",
-      titleSuffix: "(do it the right way)",
-      subtitle: "I am here to help and guide you step by step so you can make the best decision.",
+      titleSuffix: "We help you take the right step.",
+      subtitle: "Find your ideal space with the confidence and experience of Argenis in the Texas real estate market.",
       cta1: "Book Your Free Consultation"
     },
     services: {

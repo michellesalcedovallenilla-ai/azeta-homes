@@ -304,9 +304,9 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           className="inline-flex items-center gap-3 bg-surface-container-high/40 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant/20 mb-4"
         >
           <div className="flex -space-x-2">
-            <img className="w-8 h-8 rounded-full border-2 border-surface object-cover" src="https://i.imgur.com/6d9Yalu.png" alt="Avatar" />
-            <img className="w-8 h-8 rounded-full border-2 border-surface object-cover" src="https://i.imgur.com/9XldcF4.png" alt="Avatar" />
-            <img className="w-8 h-8 rounded-full border-2 border-surface object-cover" src="https://i.imgur.com/TLkAKtr.png" alt="Avatar" />
+            <img className="w-8 h-8 rounded-full border-2 border-surface object-cover" src="https://i.imgur.com/6d9Yalu.png" alt="Familia feliz comprar casa Houston Azeta Homes" />
+            <img className="w-8 h-8 rounded-full border-2 border-surface object-cover" src="https://i.imgur.com/9XldcF4.png" alt="Cliente satisfecho Azeta Homes Houston" />
+            <img className="w-8 h-8 rounded-full border-2 border-surface object-cover" src="https://i.imgur.com/TLkAKtr.png" alt="Testimonio compra casa Houston Azeta Homes" />
           </div>
           <span className="text-xs font-label uppercase tracking-widest text-tertiary">{t.badge}</span>
         </motion.div>
@@ -322,7 +322,7 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
             {t.titleLine2}
             <span className="text-tertiary">{t.titleHighlight}</span>
           </span>
-          <span className="block mt-3 text-2xl text-on-surface-variant md:mt-4 md:text-5xl lg:text-6xl md:leading-[1.1]">
+          <span className="block mt-1 md:mt-2 text-on-surface-variant">
             {t.titleSuffix}
           </span>
         </motion.h1>
@@ -554,7 +554,7 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
                     >
                     <img 
                       src={item.url} 
-                      alt={`Success Story ${idx}`} 
+                      alt={`casa-en-venta-houston-azeta-homes-${idx}`} 
                       className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
@@ -631,7 +631,7 @@ const About = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () =>
             <img 
               className="w-full transition-all duration-700 cursor-pointer" 
               src="https://i.imgur.com/PrWEgtn.jpeg" 
-              alt="Argenis Zabala" 
+              alt="Argenis Zabala Realtor Houston - Azeta Homes" 
             />
           </div>
           <div className="absolute -bottom-8 -right-8 bg-surface-container-high p-8 rounded-2xl border border-outline-variant/20 z-20 hidden md:block">
