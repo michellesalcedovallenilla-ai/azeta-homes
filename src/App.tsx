@@ -259,18 +259,25 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
   const t = translations[lang].hero;
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isLoadingVideo, setIsLoadingVideo] = useState(false);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
 
   const handlePlayVideo = () => {
     if (videoRef.current) {
       setIsLoadingVideo(true);
+      videoRef.current.muted = false;
       videoRef.current.play().then(() => {
         setIsPlaying(true);
         setIsLoadingVideo(false);
       }).catch((error) => {
         console.error("Error playing video:", error);
-        // Sometimes browsers require the video to be muted to play initially
         if (videoRef.current) {
           videoRef.current.muted = true;
           videoRef.current.play().then(() => {
@@ -304,11 +311,11 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           <span className="text-xs font-label uppercase tracking-widest text-tertiary">{t.badge}</span>
         </motion.div>
 
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-          className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight md:leading-[1.1] tracking-tight max-w-4xl text-balance"
+          className="font-headline text-[1.6rem] sm:text-4xl md:text-5xl lg:text-6xl text-on-surface leading-tight md:leading-[1.1] tracking-tight max-w-4xl text-balance"
         >
           <span className="block">{t.titleLine1}</span>
           <span className="block">
@@ -337,12 +344,15 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
           className="w-full max-w-4xl mx-auto mt-8 relative aspect-video rounded-3xl overflow-hidden shadow-2xl border border-white/10"
         >
-          <video 
+          <video
             ref={videoRef}
             className="w-full h-full object-cover"
             playsInline
-            controls={isPlaying}
-            preload="metadata"
+            controls
+            muted
+            autoPlay
+            loop
+            preload="auto"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
           >

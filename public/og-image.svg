@@ -1,0 +1,16 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0a1628"/>
+  <g transform="translate(600, 250) scale(3.5)">
+    <path d="M -30 18 L -5 18 L 22 -28 L -3 -28 Z" fill="#d9dde3"/>
+    <path d="M 10 -3 L 35 -3 L 48 18 L 23 18 Z" fill="#d9dde3"/>
+  </g>
+  <text x="600" y="420" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="52" text-anchor="middle" fill="#d9dde3" letter-spacing="-1">
+    Λzeta Homes.
+  </text>
+  <text x="600" y="470" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="24" text-anchor="middle" fill="#8a9bb0" letter-spacing="0.5">
+    Real Estate Group
+  </text>
+  <text x="600" y="540" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" text-anchor="middle" fill="#e7c353">
+    argeniszabala.com
+  </text>
+</svg>
