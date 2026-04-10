@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { 
   Menu, X, Home, Image as ImageIcon, User, Calculator, 
-  HelpCircle, Calendar, ArrowRight, CheckCircle2,
+  HelpCircle, Calendar, Play, ArrowRight, CheckCircle2,
   TrendingUp, Tag, BadgeCheck, Map as MapIcon, ChevronDown,
-  Instagram, MessageCircle, Sun, Moon, Compass
+  Instagram, Linkedin, MessageCircle, Sun, Moon, Compass
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { translations, Language } from './constants/translations';
@@ -15,13 +15,71 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    setIsMobile(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }, []);
   return isMobile;
 };
+
+// --- Static Data & Sub-components ---
+const BUILDINGS_LAYER_1 = [
+  { h: 75, w: 8, r: '2px', type: 'office' }, { h: 95, w: 12, r: '4px', type: 'residential' }, 
+  { h: 85, w: 10, r: '2px', type: 'tower' }, { h: 105, w: 14, r: '6px', type: 'office' }, 
+  { h: 70, w: 9, r: '2px', type: 'residential' }, { h: 90, w: 11, r: '4px', type: 'tower' },
+  { h: 80, w: 10, r: '2px', type: 'office' }, { h: 100, w: 15, r: '6px', type: 'residential' },
+];
+
+const BUILDINGS_LAYER_2 = [
+  { h: 55, w: 12, r: '3px', type: 'residential' }, { h: 80, w: 16, r: '6px', type: 'office' }, 
+  { h: 65, w: 14, r: '4px', type: 'tower' }, { h: 90, w: 20, r: '8px', type: 'residential' },
+  { h: 60, w: 13, r: '4px', type: 'office' }, { h: 85, w: 18, r: '6px', type: 'tower' }
+];
+
+const BUILDINGS_LAYER_3 = [
+  { h: 35, w: 18, r: '4px', type: 'office' }, { h: 60, w: 25, r: '8px', type: 'residential' }, 
+  { h: 45, w: 20, r: '6px', type: 'tower' }, { h: 70, w: 28, r: '10px', type: 'office' },
+  { h: 40, w: 22, r: '6px', type: 'residential' }
+];
+
+const Building: React.FC<{ b: any, i: number, layer: number, isMobile: boolean }> = React.memo(({ b, i, layer, isMobile }) => {
+  const isOffice = b.type === 'office';
+  const isRes = b.type === 'residential';
+  const isTower = b.type === 'tower';
+  
+  // Vary opacity based on layer for depth
+  const baseOpacity = layer === 1 ? 0.25 : layer === 2 ? 0.4 : 0.6;
+  
+  return (
+    <div 
+      className="relative border-t border-x border-white/10 flex flex-col items-center justify-end overflow-hidden"
+      style={{ 
+        height: `${b.h}%`, 
+        width: `${b.w}%`, 
+        borderRadius: `${b.r} ${b.r} 0 0`,
+        backgroundColor: `rgba(var(--building-rgb), ${baseOpacity * 0.12})`,
+        backdropFilter: isMobile ? 'none' : 'blur(8px)',
+        WebkitBackdropFilter: isMobile ? 'none' : 'blur(8px)'
+      }}
+    >
+      {/* Windows Grid */}
+      {isOffice && (
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:12px_12px] mt-4 mx-1" />
+      )}
+      {isRes && (
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.08)_2px,transparent_2px)] bg-[size:100%_16px] mt-2 mx-2" />
+      )}
+      {isTower && (
+        <>
+          <div className="absolute top-0 w-[2px] h-16 bg-white/20 -translate-y-full" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_100%] mx-2" />
+        </>
+      )}
+    </div>
+  );
+});
 
 // --- Components ---
 
@@ -38,7 +96,7 @@ const SkylineBackground = () => {
       mouseX.set((clientX / innerWidth) - 0.5);
       mouseY.set((clientY / innerHeight) - 0.5);
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
@@ -55,10 +113,6 @@ const SkylineBackground = () => {
   const mouseX2 = useTransform(springMouseX, [-0.5, 0.5], isMobile ? [0, 0] : [-10, 10]);
   const mouseX3 = useTransform(springMouseX, [-0.5, 0.5], isMobile ? [0, 0] : [-15, 15]);
 
-  const mouseY1 = useTransform(springMouseY, [-0.5, 0.5], isMobile ? [0, 0] : [-2, 2]);
-  const mouseY2 = useTransform(springMouseY, [-0.5, 0.5], isMobile ? [0, 0] : [-5, 5]);
-  const mouseY3 = useTransform(springMouseY, [-0.5, 0.5], isMobile ? [0, 0] : [-8, 8]);
-
   const springY1 = useSpring(scrollY1, { stiffness: 10, damping: 40 });
   const springY2 = useSpring(scrollY2, { stiffness: 10, damping: 40 });
   const springY3 = useSpring(scrollY3, { stiffness: 10, damping: 40 });
@@ -68,63 +122,6 @@ const SkylineBackground = () => {
     [0, 0.5, 1],
     ['rgba(231, 195, 83, 0.03)', 'rgba(30, 58, 138, 0.05)', 'rgba(231, 195, 83, 0.03)']
   );
-
-  // Explicit Building Configurations
-  const buildingsLayer1 = useRef([
-    { h: 75, w: 8, r: '2px', type: 'office' }, { h: 95, w: 12, r: '4px', type: 'residential' }, 
-    { h: 85, w: 10, r: '2px', type: 'tower' }, { h: 105, w: 14, r: '6px', type: 'office' }, 
-    { h: 70, w: 9, r: '2px', type: 'residential' }, { h: 90, w: 11, r: '4px', type: 'tower' },
-    { h: 80, w: 10, r: '2px', type: 'office' }, { h: 100, w: 15, r: '6px', type: 'residential' },
-  ]).current;
-  
-  const buildingsLayer2 = useRef([
-    { h: 55, w: 12, r: '3px', type: 'residential' }, { h: 80, w: 16, r: '6px', type: 'office' }, 
-    { h: 65, w: 14, r: '4px', type: 'tower' }, { h: 90, w: 20, r: '8px', type: 'residential' },
-    { h: 60, w: 13, r: '4px', type: 'office' }, { h: 85, w: 18, r: '6px', type: 'tower' }
-  ]).current;
-
-  const buildingsLayer3 = useRef([
-    { h: 35, w: 18, r: '4px', type: 'office' }, { h: 60, w: 25, r: '8px', type: 'residential' }, 
-    { h: 45, w: 20, r: '6px', type: 'tower' }, { h: 70, w: 28, r: '10px', type: 'office' },
-    { h: 40, w: 22, r: '6px', type: 'residential' }
-  ]).current;
-
-  const Building: React.FC<{ b: any, i: number, layer: number }> = ({ b, i, layer }) => {
-    const isOffice = b.type === 'office';
-    const isRes = b.type === 'residential';
-    const isTower = b.type === 'tower';
-    
-    // Vary opacity based on layer for depth
-    const baseOpacity = layer === 1 ? 0.25 : layer === 2 ? 0.4 : 0.6;
-    
-    return (
-      <div 
-        className="relative border-t border-x border-white/10 flex flex-col items-center justify-end overflow-hidden"
-        style={{ 
-          height: `${b.h}%`, 
-          width: `${b.w}%`, 
-          borderRadius: `${b.r} ${b.r} 0 0`,
-          backgroundColor: `rgba(var(--building-rgb), ${baseOpacity * 0.12})`,
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)'
-        }}
-      >
-        {/* Windows Grid */}
-        {isOffice && (
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:12px_12px] mt-4 mx-1" />
-        )}
-        {isRes && (
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.08)_2px,transparent_2px)] bg-[size:100%_16px] mt-2 mx-2" />
-        )}
-        {isTower && (
-          <>
-            <div className="absolute top-0 w-[2px] h-16 bg-white/20 -translate-y-full" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_100%] mx-2" />
-          </>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-surface transition-colors duration-500">
@@ -145,23 +142,26 @@ const SkylineBackground = () => {
 
       {/* Layer 1: Far Skyline */}
       <motion.div 
+        style={{ y: springY1, x: mouseX1 }}
         className="absolute bottom-[-20vh] left-[-5%] w-[110%] h-[90vh] flex items-end justify-around px-4 blur-[6px]"
       >
-        {buildingsLayer1.map((b, i) => <Building key={i} b={b} i={i} layer={1} />)}
+        {BUILDINGS_LAYER_1.map((b, i) => <Building key={i} b={b} i={i} layer={1} isMobile={isMobile} />)}
       </motion.div>
 
       {/* Layer 2: Mid Skyline */}
       <motion.div 
+        style={{ y: springY2, x: mouseX2 }}
         className="absolute bottom-[-25vh] left-[-5%] w-[110%] h-[80vh] flex items-end justify-between px-12 blur-[4px]"
       >
-        {buildingsLayer2.map((b, i) => <Building key={i} b={b} i={i} layer={2} />)}
+        {BUILDINGS_LAYER_2.map((b, i) => <Building key={i} b={b} i={i} layer={2} isMobile={isMobile} />)}
       </motion.div>
 
       {/* Layer 3: Close Skyline */}
       <motion.div 
+        style={{ y: springY3, x: mouseX3 }}
         className="absolute bottom-[-30vh] left-[-5%] w-[110%] h-[70vh] flex items-end justify-around px-2 blur-[2px]"
       >
-        {buildingsLayer3.map((b, i) => <Building key={i} b={b} i={i} layer={3} />)}
+        {BUILDINGS_LAYER_3.map((b, i) => <Building key={i} b={b} i={i} layer={3} isMobile={isMobile} />)}
       </motion.div>
 
       {/* Top Gradient for text legibility */}
@@ -180,7 +180,7 @@ const Navbar = ({ lang, setLang, onOpenCalendly }: { lang: Language, setLang: (l
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -259,7 +259,33 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
   const t = translations[lang].hero;
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(false);
+
+  const handlePlayVideo = () => {
+    if (videoRef.current) {
+      setIsLoadingVideo(true);
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+        setIsLoadingVideo(false);
+      }).catch((error) => {
+        console.error("Error playing video:", error);
+        // Sometimes browsers require the video to be muted to play initially
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play().then(() => {
+            setIsPlaying(true);
+            setIsLoadingVideo(false);
+          }).catch(e => {
+            console.error("Still failing to play:", e);
+            setIsLoadingVideo(false);
+          });
+        } else {
+          setIsLoadingVideo(false);
+        }
+      });
+    }
+  };
 
   return (
     <section className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden pt-24 md:pt-32 pb-8">
@@ -311,20 +337,32 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
           transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
           className="w-full max-w-4xl mx-auto mt-8 relative aspect-video rounded-3xl overflow-hidden shadow-2xl border border-white/10"
         >
-          <video
+          <video 
             ref={videoRef}
             className="w-full h-full object-cover"
-            autoPlay
-            muted
             playsInline
-            controls
-            preload="auto"
+            controls={isPlaying}
+            preload="metadata"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
           >
             <source src="/videohere_opt.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          {!isPlaying && (
+            <div 
+              className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer group transition-opacity"
+              onClick={isLoadingVideo ? undefined : handlePlayVideo}
+            >
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-tertiary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(231,195,83,0.5)] transition-transform duration-500 group-hover:scale-110">
+                {isLoadingVideo ? (
+                  <div className="w-8 h-8 md:w-10 md:h-10 border-4 border-on-tertiary-fixed border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Play className="w-8 h-8 md:w-10 md:h-10 text-on-tertiary-fixed fill-current ml-2" />
+                )}
+              </div>
+            </div>
+          )}
         </motion.div>
 
         <motion.div 
@@ -386,60 +424,63 @@ const Services = ({ lang }: { lang: Language }) => {
     </section>
   );
 };
-const SuccessStories = ({ lang }: { lang: Language }) => {
-  const testimonials = [
-    {
-      url: "https://i.imgur.com/YYpugoc.png",
-      text: lang === 'es' 
-        ? "Construir nuestra casa desde cero era algo que nos emocionaba, pero también nos daba un poco de miedo por todo lo que implica. Argenis nos acompañó en cada paso del proceso, desde elegir el builder hasta diseñar cada detalle de la casa a nuestro gusto."
-        : "Building our house from scratch was something that excited us, but also gave us a bit of fear because of all that it implies. Argenis accompanied us in every step of the process, from choosing the builder to designing every detail of the house to our liking.",
-      author: "Diego Craik & Maria Fermin – Katy, TX (Nueva Construcción)"
-    },
-    {
-      url: "https://i.imgur.com/6hgCRQU.png",
-      text: lang === 'es'
-        ? "Me mudé desde New Jersey sin conocer mucho Houston, y Argenis fue clave en todo el proceso. Me orientó con las zonas, me mostró opciones y me ayudó a tomar la mejor decisión sin sentir presión. Gracias a él hoy tengo mi casa en Conroe y no podría estar más contento."
-        : "I moved from New Jersey without knowing much about Houston, and Argenis was key in the whole process. He guided me with the areas, showed me options and helped me make the best decision without feeling pressure. Thanks to him today I have my house in Conroe and I couldn't be happier.",
-      author: "Ruben Bello – Conroe, TX (desde New Jersey)"
-    },
-    {
-      url: "https://i.imgur.com/oJTVUDH.png",
-      text: lang === 'es'
-        ? "Trabajar con Argenis fue una experiencia increíble. Desde el primer día nos explicó todo el proceso paso a paso y siempre estuvo disponible para responder nuestras dudas. Nos ayudó a encontrar una casa perfecta para nuestra familia en Spring."
-        : "Working with Argenis was an incredible experience. From the first day he explained the whole process step by step and was always available to answer our questions. He helped us find a perfect home for our family in Spring.",
-      author: "Javier Fuentes & Perla Fuentes – Spring, TX"
-    },
-    {
-      url: "https://i.imgur.com/PFLRWAR.png",
-      text: lang === 'es'
-        ? "Argenis hizo que todo el proceso fuera mucho más fácil de lo que esperábamos. Nos ayudó a entender nuestras opciones y a tomar decisiones con confianza. Siempre estuvo pendiente de nosotros y negociando para conseguirnos lo mejor. Lo recomendamos 100%."
-        : "Argenis made the whole process much easier than we expected. He helped us understand our options and make decisions with confidence. He was always looking out for us and negotiating to get us the best. We recommend him 100%.",
-      author: "Cesar Mendoza & Arlene Acosta – Katy, TX"
-    },
-    {
-      url: "https://i.imgur.com/gVoZjU9.png",
-      text: lang === 'es'
-        ? "Trabajar con Argenis fue una de las mejores decisiones que tomamos durante el proceso de compra. Desde el inicio nos hizo sentir seguros, nos explicó cada paso con claridad y siempre estuvo disponible para cualquier duda."
-        : "Working with Argenis was one of the best decisions we made during the buying process. From the beginning he made us feel secure, explained each step clearly and was always available for any questions.",
-      author: "Gabriel Tellez & Catherine Alcubilla – Katy, TX"
-    },
-    {
-      url: "https://i.imgur.com/MWAcKKk.png",
-      text: lang === 'es'
-        ? "Desde el primer momento sentimos confianza trabajando con Argenis. Nos guió durante todo el proceso de compra de nuestra casa nueva y se aseguró de que todo saliera bien."
-        : "From the first moment we felt confident working with Argenis. He guided us throughout the process of buying our new home and made sure everything went well.",
-      author: "Omar Ali & Alicia – Katy, TX"
-    },
-    {
-      url: "https://i.imgur.com/EicQfjn.png",
-      text: lang === 'es'
-        ? "Argenis nos ayudó durante todo el proceso de construir nuestra casa y fue clave para evitar errores. Nos orientó con el builder, los incentivos y cada decisión importante."
-        : "Argenis helped us throughout the process of building our house and was key to avoiding mistakes. He guided us with the builder, the incentives and every important decision.",
-      author: "Amarilys & Carlos – Katy, TX (Nueva Construcción)"
-    }
-  ];
+const getTestimonials = (lang: Language) => [
+  {
+    url: "https://i.imgur.com/YYpugoc.png",
+    text: lang === 'es' 
+      ? "Construir nuestra casa desde cero era algo que nos emocionaba, pero también nos daba un poco de miedo por todo lo que implica. Argenis nos acompañó en cada paso del proceso, desde elegir el builder hasta diseñar cada detalle de la casa a nuestro gusto."
+      : "Building our house from scratch was something that excited us, but also gave us a bit of fear because of all that it implies. Argenis accompanied us in every step of the process, from choosing the builder to designing every detail of the house to our liking.",
+    author: "Diego Craik & Maria Fermin – Katy, TX (Nueva Construcción)"
+  },
+  {
+    url: "https://i.imgur.com/6hgCRQU.png",
+    text: lang === 'es'
+      ? "Me mudé desde New Jersey sin conocer mucho Houston, y Argenis fue clave en todo el proceso. Me orientó con las zonas, me mostró opciones y me ayudó a tomar la mejor decisión sin sentir presión. Gracias a él hoy tengo mi casa en Conroe y no podría estar más contento."
+      : "I moved from New Jersey without knowing much about Houston, and Argenis was key in the whole process. He guided me with the areas, showed me options and helped me make the best decision without feeling pressure. Thanks to him today I have my house in Conroe and I couldn't be happier.",
+    author: "Ruben Bello – Conroe, TX (desde New Jersey)"
+  },
+  {
+    url: "https://i.imgur.com/oJTVUDH.png",
+    text: lang === 'es'
+      ? "Trabajar con Argenis fue una experiencia increíble. Desde el primer día nos explicó todo el proceso paso a paso y siempre estuvo disponible para responder nuestras dudas. Nos ayudó a encontrar una casa perfecta para nuestra familia en Spring."
+      : "Working with Argenis was an incredible experience. From the first day he explained the whole process step by step and was always available to answer our questions. He helped us find a perfect home for our family in Spring.",
+    author: "Javier Fuentes & Perla Fuentes – Spring, TX"
+  },
+  {
+    url: "https://i.imgur.com/PFLRWAR.png",
+    text: lang === 'es'
+      ? "Argenis hizo que todo el proceso fuera mucho más fácil de lo que esperábamos. Nos ayudó a entender nuestras opciones y a tomar decisiones con confianza. Siempre estuvo pendiente de nosotros y negociando para conseguirnos lo mejor. Lo recomendamos 100%."
+      : "Argenis made the whole process much easier than we expected. He helped us understand our options and make decisions with confidence. He was always looking out for us and negotiating to get us the best. We recommend him 100%.",
+    author: "Cesar Mendoza & Arlene Acosta – Katy, TX"
+  },
+  {
+    url: "https://i.imgur.com/gVoZjU9.png",
+    text: lang === 'es'
+      ? "Trabajar con Argenis fue una de las mejores decisiones que tomamos durante el proceso de compra. Desde el inicio nos hizo sentir seguros, nos explicó cada paso con claridad y siempre estuvo disponible para cualquier duda."
+      : "Working with Argenis was one of the best decisions we made during the buying process. From the beginning he made us feel secure, explained each step clearly and was always available for any questions.",
+    author: "Gabriel Tellez & Catherine Alcubilla – Katy, TX"
+  },
+  {
+    url: "https://i.imgur.com/MWAcKKk.png",
+    text: lang === 'es'
+      ? "Desde el primer momento sentimos confianza trabajando con Argenis. Nos guió durante todo el proceso de compra de nuestra casa nueva y se aseguró de que todo saliera bien."
+      : "From the first moment we felt confident working with Argenis. He guided us throughout the process of buying our new home and made sure everything went well.",
+    author: "Omar Ali & Alicia – Katy, TX"
+  },
+  {
+    url: "https://i.imgur.com/EicQfjn.png",
+    text: lang === 'es'
+      ? "Argenis nos ayudó durante todo el proceso de construir nuestra casa y fue clave para evitar errores. Nos orientó con el builder, los incentivos y cada decisión importante."
+      : "Argenis helped us throughout the process of building our house and was key to avoiding mistakes. He guided us with the builder, the incentives and every important decision.",
+    author: "Amarilys & Carlos – Katy, TX (Nueva Construcción)"
+  }
+];
 
+const SuccessStories = ({ lang }: { lang: Language }) => {
+  const testimonials = React.useMemo(() => getTestimonials(lang), [lang]);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const isMobile = useIsMobile();
 
   return (
     <section id="testimonials" className="py-16 md:py-24 bg-transparent relative z-10 overflow-hidden w-full">
@@ -480,7 +521,7 @@ const SuccessStories = ({ lang }: { lang: Language }) => {
                         animate={{ 
                           opacity: isCenter ? 1 : isVisible ? 0.4 : 0, 
                           scale: isCenter ? 1 : isVisible ? 0.85 : 0.7,
-                          x: offset * (typeof window !== 'undefined' && window.innerWidth < 768 ? 140 : 250),
+                          x: offset * (isMobile ? 140 : 250),
                           zIndex: isCenter ? 10 : isVisible ? 5 : 0,
                           filter: isCenter ? 'blur(0px)' : 'blur(4px)',
                           pointerEvents: isCenter ? 'auto' : 'none'
@@ -629,28 +670,40 @@ const MortgageCalculator = ({ lang, onOpenCalendly }: { lang: Language, onOpenCa
   const [pmi, setPmi] = useState(0);
   const [zipCode, setZipCode] = useState("77001");
 
-  const principalAndInterest = ((value - down) * (rate / 100 / 12)) / (1 - Math.pow(1 + rate / 100 / 12, -360));
-  const monthlyTax = (value * (taxRate / 100)) / 12;
-  const monthlyInsurance = insurance / 12;
-  const monthlyHoa = hoa;
-  const monthlyPmi = pmi;
+  const { principalAndInterest, monthlyTax, monthlyInsurance, monthlyHoa, monthlyPmi, monthly, downPercent, data } = React.useMemo(() => {
+    const pni = ((value - down) * (rate / 100 / 12)) / (1 - Math.pow(1 + rate / 100 / 12, -360)) || 0;
+    const mTax = (value * (taxRate / 100)) / 12 || 0;
+    const mIns = insurance / 12 || 0;
+    const mHoa = hoa || 0;
+    const mPmi = pmi || 0;
+    
+    const total = Math.round(pni + mTax + mIns + mHoa + mPmi);
+    const dPercent = value > 0 ? ((down / value) * 100).toFixed(1) : "0";
 
-  const monthly = Math.round(principalAndInterest + monthlyTax + monthlyInsurance + monthlyHoa + monthlyPmi);
+    const chartData = [
+      { name: t.principalAndInterest || 'Principal & Interest', value: pni, color: '#F27D26' },
+      { name: t.propertyTax || 'Property Taxes', value: mTax, color: '#141414' },
+      { name: t.insurance || 'Home Insurance', value: mIns, color: '#E4E3E0' },
+      { name: t.hoa || 'HOA', value: mHoa, color: '#8E9299' },
+      { name: t.pmi || 'PMI', value: mPmi, color: '#A0A0A0' },
+    ].filter(item => item.value > 0);
 
-  const downPercent = value > 0 ? ((down / value) * 100).toFixed(1) : "0";
+    return {
+      principalAndInterest: pni,
+      monthlyTax: mTax,
+      monthlyInsurance: mIns,
+      monthlyHoa: mHoa,
+      monthlyPmi: mPmi,
+      monthly: total,
+      downPercent: dPercent,
+      data: chartData
+    };
+  }, [value, down, rate, taxRate, insurance, hoa, pmi, t]);
 
   const handleDownPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const pct = Number(e.target.value);
     setDown((value * pct) / 100);
   };
-
-  const data = [
-    { name: t.principalAndInterest || 'Principal & Interest', value: principalAndInterest, color: '#F27D26' },
-    { name: t.propertyTax || 'Property Taxes', value: monthlyTax, color: '#141414' },
-    { name: t.insurance || 'Home Insurance', value: monthlyInsurance, color: '#E4E3E0' },
-    { name: t.hoa || 'HOA', value: monthlyHoa, color: '#8E9299' },
-    { name: t.pmi || 'PMI', value: monthlyPmi, color: '#A0A0A0' },
-  ].filter(item => item.value > 0);
 
   return (
     <section id="calculator" className="py-16 md:py-24 bg-transparent relative z-10">
@@ -923,12 +976,13 @@ const Footer = ({ lang }: { lang: Language }) => {
             <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.contact}</a>
           </div>
           <div className="flex items-center gap-6">
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.instagram.com/argeniszabalarealtor/" target="_blank" rel="noopener noreferrer"><Instagram className="w-5 h-5" /></a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.tiktok.com/@argeniszabalarealtor" target="_blank" rel="noopener noreferrer">
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Instagram className="w-5 h-5" /></a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                 <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/>
               </svg>
             </a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Linkedin className="w-5 h-5" /></a>
           </div>
         </div>
         <p className="text-on-surface-variant font-body text-sm text-center md:text-right max-w-xs md:pr-20">
