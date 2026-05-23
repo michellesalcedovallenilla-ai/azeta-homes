@@ -276,15 +276,14 @@ const Hero = ({ lang, onOpenCalendly }: { lang: Language, onOpenCalendly: () => 
       videoRef.current.play().then(() => {
         setIsPlaying(true);
         setIsLoadingVideo(false);
-      }).catch((error) => {
-        console.error("Error playing video:", error);
+      }).catch(() => {
+        // Browser blocked unmuted autoplay — fall back to muted playback silently.
         if (videoRef.current) {
           videoRef.current.muted = true;
           videoRef.current.play().then(() => {
             setIsPlaying(true);
             setIsLoadingVideo(false);
-          }).catch(e => {
-            console.error("Still failing to play:", e);
+          }).catch(() => {
             setIsLoadingVideo(false);
           });
         } else {
@@ -981,19 +980,27 @@ const Footer = ({ lang }: { lang: Language }) => {
         </div>
         <div className="flex flex-col items-center gap-6">
           <div className="flex flex-wrap justify-center gap-6 md:gap-8 items-center">
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.privacy}</a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.terms}</a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest" href="#">{t.contact}</a>
-          </div>
-          <div className="flex items-center gap-6">
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Instagram className="w-5 h-5" /></a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/>
-              </svg>
+            {/* Privacy / Terms links removed until client provides real pages. Re-enable by adding href="/privacy" etc. */}
+            <a
+              className="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm uppercase tracking-widest"
+              href="https://wa.me/18323887224"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t.contact}
             </a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#"><Linkedin className="w-5 h-5" /></a>
           </div>
+          {/*
+            Social icon row — disabled until the client provides verified profile URLs.
+            To re-enable, replace each href with the real public profile URL.
+            <div className="flex items-center gap-6">
+              <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.instagram.com/REPLACE_ME/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram className="w-5 h-5" /></a>
+              <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.tiktok.com/@REPLACE_ME" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.23-1.15 4.14-2.98 5.39-1.84 1.27-4.1 1.55-6.08.81-1.99-.75-3.53-2.38-4.1-4.38-.58-2.01-.11-4.24 1.1-5.88 1.21-1.65 3.12-2.65 5.11-2.77V14.1c-1.4.05-2.65.8-3.32 2.01-.66 1.2-.66 2.72.02 3.91.68 1.18 1.95 1.91 3.32 1.91 1.37 0 2.64-.73 3.32-1.91.68-1.19.68-2.71 0-3.91-.01-.01-.01-.02-.02-.03V.02z"/></svg>
+              </a>
+              <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="https://www.linkedin.com/in/REPLACE_ME/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Linkedin className="w-5 h-5" /></a>
+            </div>
+          */}
         </div>
         <p className="text-on-surface-variant font-body text-sm text-center md:text-right max-w-xs md:pr-20">
           {t.rights}
@@ -1008,6 +1015,10 @@ const Footer = ({ lang }: { lang: Language }) => {
 export default function App() {
   const [lang, setLang] = useState<Language>('es');
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   return (
     <div className="min-h-screen relative overflow-x-hidden w-full flex flex-col">
